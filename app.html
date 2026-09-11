@@ -26,7 +26,12 @@
 <script>try{var _tm=localStorage.getItem('xy-home-v2:theme-mode');if(_tm==='dark'||(_tm!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');}catch(e){}</script>
 <script>
 /* [封面移除补丁] 系统字卡锁的解锁入口原本在开屏封面上；封面已移除，直接置为已解锁，避免字卡全锁却无处解锁。 */
-try { localStorage.setItem('xy-home-v2:cardlock-state', 'open'); } catch (e) {}
+try {
+  localStorage.setItem('xy-home-v2:cardlock-state', 'open');    /* 系统字卡锁：原解锁入口在封面 */
+  localStorage.setItem('xy-home-v2:applock-qa-en', '0');        /* 关闭「开屏问答门」（默认开启） */
+  localStorage.setItem('xy-home-v2:applock-qaskip', '1');       /* 本机永久跳过问答层（双保险） */
+  localStorage.setItem('xy-home-v2:applock-pinhint', '1');      /* 不再弹「小提醒：应用锁」 */
+} catch (e) {}
 </script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -10109,11 +10114,6 @@ transition-duration: .01ms !important;
         </div>
       </div>
       <div class="ver">Mochi 字卡传讯 v3.26.574</div>
-      <div class="ver-credit">原版小红书@言序（1842523578）</div>
-      <!-- v3.27.x：设置页底部防骗声明 -->
-      <div class="set-alert">
-        <b>Mochi字卡网站免费。</b>作者只有两个账号：小红书@言序（1842523578）和抖音@言序（58334080131）；作者不玩抖音、不回消息，是看到有人想花钱求网站才开的号，仅用于发布本站链接。本站不收取任何费用，如有出现任何收费情况，均为诈骗，注意防止被骗。二传、分享本站链接必须标注作者署名：小红书 @言序（1842523578），禁止删除或修改；严禁收费倒卖本站链接、安装包——如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家。
-      </div>
     </div>
 
     <!-- 查看存储（独立页面，v3.26.x） -->
@@ -18989,6 +18989,7 @@ box.querySelector('p').textContent = texts[bar.key];
 return box;
 }
 function ensureSettings() {
+return; /* [封面移除补丁] 不再向设置页注入防骗公告（原逻辑会动态重建该段落） */
 const page = document.getElementById('page-setting');
 if (!page) return;
 let box = page.querySelector('.set-alert');
@@ -29896,7 +29897,7 @@ let prob = cfgn(c, 'as-prob', 30);
 if (!(prob > 0)) prob = 30;
 if (cfgn(c, 'dnd-en', 0) === 1) prob = 10;
 if (!hit(prob)) return;
-if (hit(cfgn(c, 'touch-prob', 5))) { performPoke(); return; }
+if (hit(cfgn(c, 'touch-prob', 3))) { performPoke(); return; }
 if (tryActiveInvite(c)) return;
 if (window.ckQuestionTry && window.ckQuestionTry(c)) return;
 (async () => {
@@ -35481,7 +35482,7 @@ function gcCfg() {
 const d = {
 'gc-prob': 60, 'gc-rs-min': 1, 'gc-rs-max': 40,
 'gc-reply-min': 1, 'gc-reply-max': 2,
-'gc-touch-prob': 5, 'gc-sticker-prob': 10, 'gc-emoji-prob': 5, 'gc-image-prob': 5, 'gc-voice-prob': 10,
+'gc-touch-prob': 3, 'gc-sticker-prob': 10, 'gc-emoji-prob': 5, 'gc-image-prob': 5, 'gc-voice-prob': 10,
 'gc-kaomoji-prob': 5, 'gc-quote-prob': 30, 'gc-rc-prob': 25, 'gc-rc-refix': 35,
 'gc-py-en': 1, 'gc-py-prob': 50, 'gc-py-min': 2, 'gc-py-max': 5
 };
@@ -42160,7 +42161,7 @@ const ls = window.activeStore();
 const DEFAULTS = {
 'rs-min': 1, 'rs-max': 40,
 'reply-min': 1, 'reply-max': 2,
-'rn-prob': 20, 'touch-prob': 5,
+'rn-prob': 20, 'touch-prob': 3,
 'sticker-prob': 10, 'emoji-prob': 5, 'image-prob': 5, 'voice-prob': 10,
 'kaomoji-prob': 5, 'quote-prob': 30,
 'rc-prob': 25, 'rc-refix': 35, 'cf-prob': 20,
@@ -42197,7 +42198,7 @@ const DEFAULTS = {
 'cs-normal': 0, 'cs-trigger-name': 1, 'cs-trigger-bar': 0,
 'gc-prob': 60, 'gc-rs-min': 1, 'gc-rs-max': 40,
 'gc-reply-min': 1, 'gc-reply-max': 2,
-'gc-touch-prob': 5, 'gc-sticker-prob': 10, 'gc-emoji-prob': 5, 'gc-image-prob': 5, 'gc-voice-prob': 10,
+'gc-touch-prob': 3, 'gc-sticker-prob': 10, 'gc-emoji-prob': 5, 'gc-image-prob': 5, 'gc-voice-prob': 10,
 'gc-kaomoji-prob': 5, 'gc-quote-prob': 30, 'gc-rc-prob': 25, 'gc-rc-refix': 35,
 'gc-py-en': 1, 'gc-py-prob': 50, 'gc-py-min': 2, 'gc-py-max': 5
 };
