@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>霞与昼</title>
+<style>
+  :root{
+    --bg:   #292929;                     /* 默认深灰底 */
+    --font: "PingFang SC","Microsoft YaHei","Hiragino Sans GB",
+            system-ui,-apple-system,"Segoe UI",sans-serif;
+
+    --ink:     #f2f2f2;
+    --ink-dim: rgba(255,255,255,.38);
+    --edge:    rgba(255,255,255,.14);
+    --slot:    #0b0b0b;                  /* 黑色输入框 */
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* ---------- 背景层（胶囊磨砂取样的对象） ---------- */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background-color:var(--bg);
+    /* 默认柔光：让磨砂有东西可磨 */
+    background-image:
+      radial-gradient(circle at 12% 6%,  rgba(255,255,255,.11), rgba(255,255,255,0) 42%),
+      radial-gradient(circle at 88% 94%, rgba(255,255,255,.075), rgba(255,255,255,0) 42%);
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  /* 自定义图片时压一层浅暗调，保证白字可读 */
+  .bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0);
+    transition:background .6s ease;
+  }
+  .bg.has-image::after{ background:rgba(0,0,0,.22); }
+
+  /* ---------- 磨砂胶囊：圈内半磨砂，圈外清晰 ---------- */
+  .pod{
+    position:relative;
+    z-index:1;
+    width:min(300px,80vw);
+    height:min(560px,72vh);
+    height:min(560px,72dvh);
+    padding:38px 26px 74px;   /* 底部留出圆弧空间 */
+    border-radius:999px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    background:linear-gradient(180deg,
+                rgba(255,255,255,.10),
+                rgba(255,255,255,.045) 46%,
+                rgba(255,255,255,.085));
+    border:1px solid var(--edge);
+    /* 半磨砂：模糊度别拉满，圈内还能看出背景的色块和轮廓 */
+    backdrop-filter:blur(14px) saturate(1.12);
+    -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    box-shadow:0 30px 70px rgba(0,0,0,.50),
+               inset 0 1px 0 rgba(255,255,255,.20),
+               inset 0 -1px 0 rgba(255,255,255,.06);
+
+    cursor:pointer;
+    animation:rise .9s cubic-bezier(.2,.8,.2,1) both;
+    transition:box-shadow .5s ease;
+  }
+
+  .pod.ready{
+    box-shadow:0 34px 80px rgba(0,0,0,.55),
+               inset 0 1px 0 rgba(255,255,255,.28),
+               inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(14px) scale(.98); }
+    to  { opacity:1; transform:translateY(0)    scale(1);   }
+  }
+
+  /* ---------- 顶部圆环：霞与昼 ---------- */
+  .lens{
+    width:min(148px,52vw);
+    height:min(148px,52vw);
+    flex:none;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(255,255,255,.22);
+    background:radial-gradient(circle at 50% 32%,
+                rgba(255,255,255,.10), rgba(255,255,255,.015) 72%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.26),
+               0 10px 26px rgba(0,0,0,.26);
+    transition:border-color .55s ease, box-shadow .55s ease;
+  }
+  .pod.ready .lens{
+    border-color:rgba(255,255,255,.44);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.40),
+               0 0 34px rgba(255,255,255,.10),
+               0 10px 26px rgba(0,0,0,.28);
+  }
+
+  .title{
+    margin:0;
+    font-size:clamp(18px,5vw,21px);
+    font-weight:400;
+    letter-spacing:.22em;
+    text-indent:.22em;
+    color:#f6f6f6;
+    text-shadow:0 1px 12px rgba(0,0,0,.28);
+  }
+
+  /* ---------- 中段：小世界 ---------- */
+  .mid{
+    flex:1;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .enter{
+    font-size:clamp(15px,4.2vw,16px);
+    letter-spacing:.34em;
+    text-indent:.34em;
+    color:rgba(255,255,255,.92);
+    user-select:none;
+    text-shadow:0 1px 12px rgba(0,0,0,.28);
+    transition:color .5s ease, text-shadow .5s ease;
+  }
+  .pod.ready .enter{
+    color:#ffffff;
+    text-shadow:0 0 20px rgba(255,255,255,.45);
+  }
+
+  /* ---------- 密码区（验证通过即收起并跳转） ---------- */
+  .form{
+    width:100%;
+    flex:none;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    max-height:150px;
+    opacity:1;
+    transition:max-height .55s cubic-bezier(.2,.8,.2,1),
+               opacity    .40s ease;
+  }
+  .pod.ready .form{
+    max-height:0;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .slot{
+    width:100%;
+    height:46px;
+    border:0;
+    border-radius:999px;
+    background:var(--slot);
+    color:#f2f2f2;
+    font-family:inherit;
+    font-size:15px;
+    letter-spacing:.45em;
+    text-indent:.45em;
+    text-align:center;
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+    transition:box-shadow .35s ease;
+    cursor:text;
+  }
+  .slot::placeholder{
+    color:rgba(255,255,255,.30);
+    font-size:13px;
+    letter-spacing:.16em;
+    text-indent:.16em;
+  }
+  .slot:focus{
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),
+               inset 0 0 0 1px rgba(255,255,255,.22);
+  }
+
+  /* 确认按钮 */
+  .confirm{
+    min-width:106px;
+    height:34px;
+    padding:0 22px;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    color:rgba(255,255,255,.90);
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:.24em;
+    text-indent:.24em;
+    cursor:pointer;
+    transition:background .3s ease, border-color .3s ease, transform .2s ease;
+  }
+  .confirm:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.36); }
+  .confirm:active{ transform:scale(.975); }
+
+  /* ---------- 提示 ---------- */
+  .hint{
+    width:100%;
+    margin:14px 0 0;
+    flex:none;
+    text-align:center;
+    font-size:11px;
+    letter-spacing:.2em;
+    text-indent:.2em;
+    color:var(--ink-dim);
+    transition:color .4s ease;
+  }
+  .hint.warn{ color:rgba(255,255,255,.75); }
+
+  /* ---------- 重设记忆（仅免密时出现） ---------- */
+  .reset{
+    position:fixed;
+    left:50%;
+    bottom:max(16px, env(safe-area-inset-bottom));
+    transform:translateX(-50%);
+    z-index:2;
+    padding:8px 14px;
+    border:0;
+    background:none;
+    color:rgba(255,255,255,.30);
+    font-family:inherit;
+    font-size:11px;
+    letter-spacing:.2em;
+    cursor:pointer;
+    transition:color .3s ease;
+  }
+  .reset:hover{ color:rgba(255,255,255,.62); }
+  .reset[hidden]{ display:none; }
+
+  /* ---------- 右下角：封面设置入口（刻意不起眼） ---------- */
+  .dot{
+    position:fixed;
+    right:max(10px, env(safe-area-inset-right));
+    bottom:max(10px, env(safe-area-inset-bottom));
+    z-index:22;
+    width:36px;
+    height:36px;
+    padding:0;
+    border:0;
+    background:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .dot i{
+    display:block;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:rgba(255,255,255,.20);
+    transition:background .35s ease, transform .35s ease, box-shadow .35s ease;
+  }
+  .dot:hover i,
+  .dot:focus-visible i{
+    background:rgba(255,255,255,.62);
+    transform:scale(1.25);
+    box-shadow:0 0 12px rgba(255,255,255,.30);
+  }
+
+  /* ---------- 设置面板 ---------- */
+  .sheet{
+    position:fixed;
+    right:max(10px, env(safe-area-inset-right));
+    bottom:calc(max(10px, env(safe-area-inset-bottom)) + 42px);
+    z-index:21;
+    width:min(272px, calc(100vw - 24px));
+    padding:16px 16px 12px;
+    border-radius:18px;
+    background:rgba(30,30,30,.74);
+    border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(18px) saturate(1.1);
+    -webkit-backdrop-filter:blur(18px) saturate(1.1);
+    box-shadow:0 20px 50px rgba(0,0,0,.50);
+    animation:pop .28s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .sheet[hidden]{ display:none; }
+
+  @keyframes pop{
+    from{ opacity:0; transform:translateY(8px) scale(.97); }
+    to  { opacity:1; transform:none; }
+  }
+
+  .sheet-title{
+    margin:0 0 14px;
+    font-size:11px;
+    letter-spacing:.24em;
+    text-indent:.24em;
+    color:rgba(255,255,255,.44);
+  }
+
+  .block{ margin-bottom:14px; }
+
+  .block-label{
+    margin:0 0 8px;
+    font-size:11px;
+    letter-spacing:.2em;
+    color:rgba(255,255,255,.44);
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .chip{
+    padding:6px 13px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    background:rgba(255,255,255,.04);
+    color:rgba(255,255,255,.84);
+    font-family:inherit;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-indent:.1em;
+    cursor:pointer;
+    transition:background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  .chip:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.34); }
+  .chip.on{
+    background:rgba(255,255,255,.90);
+    border-color:transparent;
+    color:#1c1c1c;
+  }
+
+  .note{
+    margin:0;
+    min-height:14px;
+    font-size:11px;
+    letter-spacing:.12em;
+    color:rgba(255,255,255,.60);
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  .note.on{ opacity:1; }
+
+  /* ---------- 密码错误抖动 ---------- */
+  .pod.shake{ animation:shake .45s ease; }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0);    }
+    20%    { transform:translateX(-7px); }
+    40%    { transform:translateX(6px);  }
+    60%    { transform:translateX(-4px); }
+    80%    { transform:translateX(2px);  }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg" id="bg"></div>
+
+  <div class="pod" id="pod">
+
+    <div class="lens">
+      <h1 class="title">霞与昼</h1>
+    </div>
+
+    <div class="mid">
+      <span class="enter" id="enter">小世界</span>
+    </div>
+
+    <div class="form" id="form">
+      <input class="slot" id="slot" type="password" inputmode="numeric"
+             autocomplete="off" maxlength="6" placeholder="请输入密码">
+      <button class="confirm" id="confirm" type="button">确认</button>
+    </div>
+
+    <p class="hint" id="hint">输入密码后点确认</p>
+
+  </div>
+
+  <button class="reset" id="reset" type="button" hidden>重设密码记忆</button>
+
+  <!-- 封面设置：仅本页可用，进入 app.html 后即无法更改 -->
+  <button class="dot" id="dot" type="button" aria-label="封面设置"><i></i></button>
+
+  <div class="sheet" id="sheet" hidden>
+    <p class="sheet-title">封面设置</p>
+
+    <div class="block">
+      <p class="block-label">背景</p>
+      <div class="chips">
+        <button class="chip" id="pick" type="button">选择图片</button>
+        <button class="chip" id="clear" type="button">恢复默认</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="block-label">字体</p>
+      <div class="chips" id="fonts"></div>
+    </div>
+
+    <p class="note" id="note"></p>
+    <input type="file" id="file" accept="image/*" hidden>
+  </div>
+
+<script>
+  var PASSWORD = '114613';
+  var TARGET   = 'app.html';
+
+  var STORE_KEY = 'xia-yu-zhou.pass';
+  var COVER_KEY = 'xia-yu-zhou.cover';
+  var TTL       = 3 * 24 * 60 * 60 * 1000;   /* 3 天 */
+  var AUTO_WAIT = 1200;                      /* 免密时的跳转延迟，留时间点「重设」 */
+  var BG_MAX    = 1600;                      /* 背景图最长边，超出则等比压缩 */
+
+  var FONTS = [
+    { key:'default', name:'默认',
+      stack:'"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,"Segoe UI",sans-serif' },
+    { key:'song', name:'宋体',
+      stack:'"Songti SC","SimSun","Noto Serif SC",serif' },
+    { key:'kai', name:'楷体',
+      stack:'"Kaiti SC","KaiTi","STKaiti",serif' },
+    { key:'yuan', name:'圆体',
+      stack:'"Yuanti SC","YouYuan","Microsoft YaHei",sans-serif' }
+  ];
+
+  var bg      = document.getElementById('bg');
+  var pod     = document.getElementById('pod');
+  var slot    = document.getElementById('slot');
+  var confirm = document.getElementById('confirm');
+  var hint    = document.getElementById('hint');
+  var reset   = document.getElementById('reset');
+
+  var dot   = document.getElementById('dot');
+  var sheet = document.getElementById('sheet');
+  var pick  = document.getElementById('pick');
+  var clear = document.getElementById('clear');
+  var fonts = document.getElementById('fonts');
+  var noteEl= document.getElementById('note');
+  var file  = document.getElementById('file');
+
+  var done      = false;
+  var autoTimer = null;
+  var failTimer = null;
+  var hintTimer = null;
+  var noteTimer = null;
+
+  /* ================= 封面设置 ================= */
+  var COVER = { font:'default', bg:'' };
+
+  function loadCover () {
+    try {
+      var o = JSON.parse(localStorage.getItem(COVER_KEY) || 'null');
+      if (o && typeof o === 'object') {
+        if (typeof o.font === 'string') COVER.font = o.font;
+        if (typeof o.bg   === 'string') COVER.bg   = o.bg;
+      }
+    } catch (e) {}
+  }
+
+  function saveCover () {
+    try { localStorage.setItem(COVER_KEY, JSON.stringify(COVER)); return true; }
+    catch (e) { return false; }        /* 多半是图片太大超出配额 */
+  }
+
+  function stackOf (key) {
+    for (var i = 0; i < FONTS.length; i++) if (FONTS[i].key === key) return FONTS[i].stack;
+    return FONTS[0].stack;
+  }
+
+  function applyCover () {
+    /* 字体 */
+    document.documentElement.style.setProperty('--font', stackOf(COVER.font));
+
+    /* 背景 */
+    if (COVER.bg) {
+      bg.style.backgroundImage = 'url("' + COVER.bg + '")';
+      bg.classList.add('has-image');
+    } else {
+      bg.style.backgroundImage = '';   /* 回落到 CSS 里的默认柔光 */
+      bg.classList.remove('has-image');
+    }
+
+    /* 选中态 */
+    var kids = fonts.children;
+    for (var i = 0; i < kids.length; i++) {
+      kids[i].classList.toggle('on', kids[i].getAttribute('data-key') === COVER.font);
+    }
+    clear.classList.toggle('on', !COVER.bg);
+  }
+
+  /* 生成字体选项 */
+  (function buildFonts () {
+    FONTS.forEach(function (f) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = f.name;
+      b.setAttribute('data-key', f.key);
+      b.style.fontFamily = f.stack;          /* 直接用该字体显示，所见即所得 */
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        COVER.font = f.key;
+        applyCover();
+        saveCover();
+      });
+      fonts.appendChild(b);
+    });
+  })();
+
+  function note (msg) {
+    noteEl.textContent = msg;
+    noteEl.classList.add('on');
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () {
+      noteEl.classList.remove('on');
+      noteEl.textContent = '';
+    }, 2800);
+  }
+
+  /* 等比压缩，避免超出 localStorage 配额；data: 图片不会污染 canvas */
+  function shrink (dataUrl, cb) {
+    var img = new Image();
+    img.onload = function () {
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || !h) { cb(dataUrl); return; }
+      var s = Math.min(1, BG_MAX / Math.max(w, h));
+      w = Math.max(1, Math.round(w * s));
+      h = Math.max(1, Math.round(h * s));
+      try {
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(c.toDataURL('image/jpeg', 0.82));
+      } catch (e) {
+        cb(dataUrl);              /* 压缩失败就退回原图 */
+      }
+    };
+    img.onerror = function () { cb(null); };
+    img.src = dataUrl;
+  }
+
+  pick.addEventListener('click', function (e) {
+    e.stopPropagation();
+    file.click();
+  });
+
+  clear.addEventListener('click', function (e) {
+    e.stopPropagation();
+    COVER.bg = '';
+    applyCover();
+    saveCover();
+    note('已恢复默认背景');
+  });
+
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    file.value = '';
+    if (!f) return;
+    if (f.type && f.type.indexOf('image/') !== 0) { note('请选择图片文件'); return; }
+
+    var fr = new FileReader();
+    fr.onload = function () {
+      shrink(fr.result, function (out) {
+        if (!out) { note('图片读取失败'); return; }
+        COVER.bg = out;
+        applyCover();
+        if (!saveCover()) note('已应用，但图片过大未能保存');
+        else              note('背景已更新');
+      });
+    };
+    fr.onerror = function () { note('图片读取失败'); };
+    fr.readAsDataURL(f);
+  });
+
+  /* 面板开合 */
+  dot.addEventListener('click', function (e) {
+    e.stopPropagation();
+    sheet.hidden = !sheet.hidden;
+  });
+
+  document.addEventListener('click', function (e) {
+    if (sheet.hidden) return;
+    if (sheet.contains(e.target) || dot.contains(e.target)) return;
+    sheet.hidden = true;
+  });
+
+  /* ================= 密码 / 免密 ================= */
+  function rememberOn () {
+    try { localStorage.setItem(STORE_KEY, String(Date.now() + TTL)); } catch (e) {}
+  }
+  function rememberFresh () {
+    try {
+      var until = parseInt(localStorage.getItem(STORE_KEY), 10);
+      if (!until || isNaN(until)) return false;
+      if (Date.now() > until) { localStorage.removeItem(STORE_KEY); return false; }
+      return true;
+    } catch (e) { return false; }
+  }
+  function rememberOff () {
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+  }
+
+  pod.addEventListener('click', function () {
+    if (done) return;
+    slot.focus();                   /* 轻触胶囊任意处 → 聚焦密码框 */
+  });
+
+  slot.addEventListener('input', function () {
+    slot.value = slot.value.replace(/\D/g, '').slice(0, PASSWORD.length);
+  });
+
+  slot.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    submit();
+  });
+
+  confirm.addEventListener('click', function (e) {
+    e.stopPropagation();
+    submit();
+  });
+
+  reset.addEventListener('click', function (e) {
+    e.stopPropagation();
+    clearTimeout(autoTimer);
+    rememberOff();
+
+    done = false;
+    pod.classList.remove('ready');
+    slot.disabled = false;
+    slot.value = '';
+    reset.hidden = true;
+    setHint('输入密码后点确认', false);
+    slot.focus();
+  });
+
+  function submit () {
+    if (done) return;
+
+    var v = slot.value;
+    if (!v) {
+      setHint('请先输入密码', true);
+      slot.focus();
+      return;
+    }
+    if (v !== PASSWORD) { fail(); return; }
+
+    /* 正确 → 记 3 天 → 立刻进入 */
+    done = true;
+    rememberOn();
+    clearTimeout(failTimer);
+    clearTimeout(hintTimer);
+    pod.classList.remove('shake');
+    pod.classList.add('ready');
+    slot.blur();
+    slot.disabled = true;
+    setHint('正在进入…', false);
+    go();
+  }
+
+  /* 免密进入（留一小段时间可点「重设密码记忆」） */
+  function autoEnter () {
+    done = true;
+    pod.classList.add('ready');
+    slot.disabled = true;
+    reset.hidden = !rememberFresh();
+    setHint('3 天内免密码 · 正在进入…', false);
+    autoTimer = setTimeout(go, AUTO_WAIT);
+  }
+
+  function fail () {
+    if (done) return;
+    pod.classList.remove('shake');
+    void pod.offsetWidth;           /* 重排以重放动画 */
+    pod.classList.add('shake');
+    setHint('密码不对，再试一次', true);
+
+    clearTimeout(failTimer);
+    failTimer = setTimeout(function () {
+      pod.classList.remove('shake');
+      slot.value = '';
+      slot.focus();
+    }, 480);
+  }
+
+  function setHint (text, warn) {
+    hint.textContent = text;
+    hint.classList.toggle('warn', !!warn);
+    clearTimeout(hintTimer);
+    if (warn) {
+      hintTimer = setTimeout(function () {
+        hint.classList.remove('warn');
+        hint.textContent = done ? '正在进入…' : '输入密码后点确认';
+      }, 1800);
+    }
+  }
+
+  function go () {
+    window.location.href = TARGET;
+  }
+
+  /* ================= 启动 ================= */
+  loadCover();
+  applyCover();
+  if (rememberFresh()) autoEnter();
+</script>
+
+</body>
+</html>
