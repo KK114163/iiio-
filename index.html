@@ -96,13 +96,14 @@
                 rgb(var(--pod-tint) / var(--pod-a1, .10)),
                 rgb(var(--pod-tint) / var(--pod-a2, .045)) 46%,
                 rgb(var(--pod-tint) / var(--pod-a3, .085)));
-    border:1px solid var(--edge);
-    /* 半磨砂：模糊度别拉满，圈内还能看出背景的色块和轮廓 */
-    backdrop-filter:blur(var(--pod-blur, 14px)) saturate(1.12);
-    -webkit-backdrop-filter:blur(var(--pod-blur, 14px)) saturate(1.12);
+    border:1px solid rgb(255 255 255 / var(--pod-ring, .14));
+    /* 模糊/饱和度/描边/内高光全部随透明度走：
+       调到 0 时胶囊成为纯窗口，内部与背景完全一致 */
+    backdrop-filter:blur(var(--pod-blur, 14px)) saturate(var(--pod-sat, 1.12));
+    -webkit-backdrop-filter:blur(var(--pod-blur, 14px)) saturate(var(--pod-sat, 1.12));
     box-shadow:0 30px 70px rgba(0,0,0,.50),
-               inset 0 1px 0 rgba(255,255,255,.20),
-               inset 0 -1px 0 rgba(255,255,255,.06);
+               inset 0 1px 0 rgb(255 255 255 / var(--pod-hl, .20)),
+               inset 0 -1px 0 rgb(255 255 255 / var(--pod-hl2, .06));
 
     cursor:pointer;
     animation:rise .9s cubic-bezier(.2,.8,.2,1) both;
@@ -111,8 +112,8 @@
 
   .pod.ready{
     box-shadow:0 34px 80px rgba(0,0,0,.55),
-               inset 0 1px 0 rgba(255,255,255,.28),
-               inset 0 -1px 0 rgba(255,255,255,.08);
+               inset 0 1px 0 rgb(255 255 255 / var(--pod-hlr, .28)),
+               inset 0 -1px 0 rgb(255 255 255 / var(--pod-hlr2, .08));
   }
 
   @keyframes rise{
@@ -184,23 +185,9 @@
     color:var(--enter-color);
     user-select:none;
 
-    /* 位置：大胶囊中线偏下 */
-    position:relative;
-    top:10%;
-
-    /* 未解锁时先不显示，输对密码后才淡入 */
-    opacity:0;
-    transform:translateY(8px) scale(.97);
-    pointer-events:none;
-    transition:opacity .5s ease,
-               transform .5s cubic-bezier(.2,.8,.2,1),
-               color .5s ease, text-shadow .5s ease,
-               border-color .55s ease, box-shadow .55s ease;
+    transition:color .5s ease, border-color .55s ease, box-shadow .55s ease;
   }
   .pod.ready .enter{
-    opacity:1;
-    transform:none;
-    pointer-events:auto;
     /* 不再改文字颜色，只提亮描边和辉光，颜色交给 --enter-color */
     border-color:rgba(255,255,255,.44);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.40),
@@ -208,6 +195,20 @@
                0 10px 26px rgba(0,0,0,.28);
     cursor:pointer;
   }
+  /* 进入按钮 + 下方小字，整组位置与淡入 */
+  .enter-box{
+    position:relative;
+    top:10%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    opacity:0;
+    transform:translateY(8px) scale(.97);
+    pointer-events:none;
+    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .pod.ready .enter-box{ opacity:1; transform:none; pointer-events:auto; }
+
   .pod.ready .enter:hover { transform:translateY(-1px); }
   .pod.ready .enter:active{ transform:translateY(0); }
 
@@ -231,7 +232,8 @@
     pointer-events:none;
   }
   /* 解锁后：提示文字收起，中段铺满整卡，「进入小世界」相对卡片真正居中 */
-  .pod.ready .hint{ display:none; }
+  /* 解锁后：底部提示改为「正在链接中」，并用 margin-top:auto 压到卡片底部 */
+  .pod.ready .hint{ display:block; margin-top:auto; }
   .pod.ready .mid{
     position:absolute;
     inset:0;
@@ -583,16 +585,18 @@
     </div>
 
     <div class="mid">
-      <span class="enter" id="enter">进入小世界</span>
+      <div class="enter-box">
+        <span class="enter" id="enter">进入小世界</span>
+      </div>
     </div>
 
     <div class="form" id="form">
       <input class="slot" id="slot" type="password" inputmode="numeric"
-             autocomplete="off" maxlength="6" placeholder="请输入密码">
+             autocomplete="off" maxlength="6" placeholder="请输入 6 位密码">
       <button class="confirm" id="confirm" type="button">确认</button>
     </div>
 
-    <p class="hint" id="hint">输入密码后点确认</p>
+    <p class="hint" id="hint">6 位密码 · 输入后点确认</p>
 
   </div>
 
@@ -949,6 +953,12 @@
     s.setProperty('--pod-a2', String(.045 * a));
     s.setProperty('--pod-a3', String(.085 * a));
     s.setProperty('--pod-blur', (14 * a).toFixed(1) + 'px');
+    s.setProperty('--pod-sat',  (1 + .12 * a).toFixed(3));
+    s.setProperty('--pod-ring', (.14 * a).toFixed(3));
+    s.setProperty('--pod-hl',   (.20 * a).toFixed(3));
+    s.setProperty('--pod-hl2',  (.06 * a).toFixed(3));
+    s.setProperty('--pod-hlr',  (.28 * a).toFixed(3));
+    s.setProperty('--pod-hlr2', (.08 * a).toFixed(3));
   }
 
   /* ---------- 磨砂色计算 ---------- */
@@ -1075,7 +1085,7 @@
     slot.disabled = false;
     slot.value = '';
     reset.hidden = true;
-    setHint('输入密码后点确认', false);
+    setHint('6 位密码 · 输入后点确认', false);
     slot.focus();
   });
 
@@ -1099,7 +1109,7 @@
     pod.classList.add('ready');
     slot.blur();
     slot.disabled = true;
-    setHint('正在进入…', false);
+    setHint('正在链接中', false);
     go();
   }
 
@@ -1110,7 +1120,7 @@
     pod.classList.add('ready');
     slot.disabled = true;
     reset.hidden = !rememberFresh();
-    setHint('3 天内免密码 · 轻触「进入小世界」', false);
+    setHint('正在链接中', false);
   }
 
   function fail () {
@@ -1135,7 +1145,7 @@
     if (warn) {
       hintTimer = setTimeout(function () {
         hint.classList.remove('warn');
-        hint.textContent = done ? '正在进入…' : '输入密码后点确认';
+        hint.textContent = done ? '正在链接中' : '6 位密码 · 输入后点确认';
       }, 1800);
     }
   }
