@@ -2,6 +2,23 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<script>
+/* [入场守门] app.html 是公开地址，直接用它会跳过 index.html 的密码封面。
+   这里校验「3 天免密」标记：
+     · 标记有效（刚在封面输过密码）→ 放行
+     · 同一标签页刚进过（sessionStorage）→ 放行，兜底
+     · 存储完全不可用 → 放行，避免两个页面来回弹
+     · 其余情况 → 弹回封面
+   没有后门参数，唯一放行途径就是在封面输对密码。 */
+(function () {
+  try {
+    var until = parseInt(localStorage.getItem('xia-yu-zhou.pass'), 10);
+    if (until && Date.now() < until) return;
+    if (sessionStorage.getItem('xy-entered') === '1') return;
+  } catch (e) { return; }
+  try { location.replace('./index.html'); } catch (e2) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual">
 <title>霞与昼</title>
 <meta name="description" content="情侣专属的摸鱼字卡聊天模拟器。本站完全免费，任何收费均为倒卖诈骗；唯一作者：小红书@言序（1842523578）。如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家。">
