@@ -34,6 +34,23 @@ try {
   localStorage.setItem('xy-home-v2:applock-pinhint', '1');      /* 不再弹「小提醒：应用锁」 */
 } catch (e) {}
 </script>
+<script>
+/* [布局重置补丁] 一次性清除旧的桌面布局存档。
+   应用会把 localStorage 里的 desk-layout 当成准，按存档把卡片搬回原位、
+   甚至重建出第三页 —— 导致 HTML 里的两页结构被覆盖。
+   这里清一次，让桌面按新的 HTML 结构重建。清完打标记，不会重复执行。 */
+try {
+  if (!localStorage.getItem('xy-patch-layout-reset-v1')) {
+    var _kill = [];
+    for (var _i = 0; _i < localStorage.length; _i++) {
+      var _k = localStorage.key(_i);
+      if (_k && (_k.indexOf('desk-layout') > -1 || _k.indexOf('desk-page-count') > -1)) _kill.push(_k);
+    }
+    for (var _j = 0; _j < _kill.length; _j++) localStorage.removeItem(_kill[_j]);
+    localStorage.setItem('xy-patch-layout-reset-v1', '1');
+  }
+} catch (e) {}
+</script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root {
