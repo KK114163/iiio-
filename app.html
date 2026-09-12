@@ -88527,24 +88527,114 @@ lastHeal: his
 #dice-mask{ position:fixed; inset:0; z-index:99999; display:none; align-items:center; justify-content:center;
   background:rgba(0,0,0,.45); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
 #dice-mask.on{ display:flex; }
-#dice-card{ width:min(320px,86vw); padding:22px 20px 18px; border-radius:22px; background:#fff; color:#111;
+#dice-card{ width:min(320px,86vw); padding:40px 20px 34px; border-radius:22px; background:#fff; color:#111;
   box-shadow:0 20px 60px rgba(0,0,0,.35); text-align:center;
   font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif; }
 #dice-title{ font-size:13px; color:#888; letter-spacing:.1em; margin:0 0 12px; }
 #dice-q{ width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid #e0e0e0; border-radius:12px;
   font-size:14px; text-align:center; outline:none; font-family:inherit; color:#111; background:#fff; }
 #dice-q:focus{ border-color:#999; }
-#dice-face{ width:104px; height:104px; margin:20px auto 8px; padding:11px; box-sizing:border-box;
-  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:7px;
-  border:2.5px solid #111; border-radius:20px; background:#fff;
-  box-shadow:0 4px 14px rgba(0,0,0,.10); }
-#dice-face i{ border-radius:50%; background:transparent; }
-#dice-face i.on{ background:#111; }
-#dice-face.red{ border-color:#e02b2b; }
-#dice-face.red i.on{ background:#e02b2b; }
-#dice-hint{ font-size:11px; color:#aaa; letter-spacing:.15em; min-height:1em; }
-#dice-btns{ display:flex; gap:10px; margin-top:18px; }
-#dice-roll{ flex:1; height:46px; border:0; border-radius:999px; background:#111; color:#fff;
+/* 外层：柔和色托，圆润卡通感 */
+#dice-face{ width:152px; height:152px; margin:4px auto 12px; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:32px; background:var(--dice-pad, #e9eaf0);
+  transition:background .3s ease; }
+/* 里面那颗骰子：软立体、无硬边，颜色由 --dice-bg / --dice-pip 控制 */
+#dice-cube{ width:98px; height:98px; box-sizing:border-box; padding:12px;
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:6px;
+  border-radius:26px; background:var(--dice-bg, #efeff4);
+  box-shadow:0 9px 20px rgba(90,80,130,.18),
+             inset 0 -5px 10px rgba(90,80,130,.10),
+             inset 0 4px 9px rgba(255,255,255,.92);
+  transition:background .3s ease; }
+#dice-cube i{ border-radius:50%; background:transparent; }
+#dice-cube i.on{ background:var(--dice-pip, #5b3fd6); box-shadow:inset 0 -1px 2px rgba(0,0,0,.22); }
+#dice-cube.red i.on{ background:#e02b2b; }
+/* 结果大字 */
+#dice-result{ font-size:30px; font-weight:800; color:#111; letter-spacing:.04em;
+  line-height:1.15; }
+#dice-result.red{ color:#e02b2b; }
+#dice-sub{ font-size:12px; color:#9a9a9a; letter-spacing:.08em; min-height:1.3em; margin-top:5px; }
+/* 左上角「记录」：两个小字，不起眼 */
+#dice-logbtn{ position:absolute; left:10px; top:12px; border:0; background:none; color:#9a9a9a;
+  font-size:12px; letter-spacing:.12em; font-family:inherit; cursor:pointer; padding:4px 6px; }
+/* 右下角「改色」：小圆图标 */
+#dice-stylebtn{ position:absolute; right:12px; bottom:12px; width:32px; height:32px; padding:0;
+  border:0; border-radius:50%; background:#f4f4f4; color:#a8a8a8;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:background .2s ease, color .2s ease; }
+#dice-stylebtn svg{ width:17px; height:17px; display:block; }
+#dice-stylebtn:active{ background:#e8e8e8; }
+/* 配色页 */
+#dicestyle-mask{ position:fixed; inset:0; z-index:100001; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.45); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+#dicestyle-mask.on{ display:flex; }
+#dicestyle-card{ width:min(300px,84vw); padding:18px 18px 14px; border-radius:22px; background:#fff; color:#111;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif; }
+#dicestyle-head{ position:relative; display:flex; align-items:center; justify-content:center;
+  padding-bottom:12px; border-bottom:1px solid #eee; margin-bottom:6px;
+  font-size:14px; letter-spacing:.1em; color:#333; }
+#dicestyle-x{ position:absolute; right:-4px; top:-6px; width:28px; height:28px; border:0; border-radius:50%;
+  background:#f2f2f2; color:#999; font-size:13px; line-height:1; cursor:pointer; padding:0; }
+#dicestyle-card .srow{ display:flex; align-items:center; justify-content:space-between;
+  padding:11px 2px; font-size:13px; color:#555; cursor:pointer; }
+#dicestyle-card .srow input[type="color"]{ width:52px; height:28px; padding:0; border:1px solid #e2e2e2;
+  border-radius:8px; background:transparent; cursor:pointer; -webkit-appearance:none; appearance:none; }
+#dicestyle-card .srow input[type="color"]::-webkit-color-swatch-wrapper{ padding:2px; }
+#dicestyle-card .srow input[type="color"]::-webkit-color-swatch{ border:0; border-radius:6px; }
+[data-theme="dark"] #dicestyle-card{ background:#1e1e1e; color:#eaeaea; }
+[data-theme="dark"] #dicestyle-head{ border-color:#2f2f2f; color:#eaeaea; }
+[data-theme="dark"] #dicestyle-card .srow{ color:#aaa; }
+[data-theme="dark"] #dicestyle-x{ background:#2f2f2f; color:#bbb; }
+[data-theme="dark"] #dice-logbtn{ color:#8a8a8a; }
+[data-theme="dark"] #dice-stylebtn{ color:#6a6a6a; }
+/* 投掷中：里面那颗小骰子翻滚（外框不动） */
+@keyframes diceTumble{
+  0%  { transform:rotate(0deg)   scale(1);    }
+  25% { transform:rotate(-95deg) scale(.84);  }
+  50% { transform:rotate(150deg) scale(1.06); }
+  75% { transform:rotate(255deg) scale(.88);  }
+  100%{ transform:rotate(360deg) scale(1);    }
+}
+#dice-cube.rolling{ animation:diceTumble .55s linear infinite; }
+/* 中间那行：投骰记录 */
+#dice-mid{ margin-top:14px; text-align:center; }
+#dice-logbtn:active{ color:#555; }
+
+/* ---------- 骰子夜间配色（跟随应用主题） ---------- */
+[data-theme="dark"] #dice-face{ background:#232323; }
+[data-theme="dark"] #dice-cube{ background:var(--dice-bg-dark, #34343c);
+  box-shadow:0 9px 20px rgba(0,0,0,.55), inset 0 -5px 10px rgba(0,0,0,.30),
+             inset 0 4px 9px rgba(255,255,255,.07); }
+[data-theme="dark"] #dice-cube i.on{ background:var(--dice-pip-dk, #cfc6ff); box-shadow:none; }
+[data-theme="dark"] #dice-cube.red i.on{ background:#ff4d4d; }
+[data-theme="dark"] #dice-result{ color:#f2f2f2; }
+[data-theme="dark"] #dice-result.red{ color:#ff4d4d; }
+[data-theme="dark"] #dice-sub{ color:#8a8a8a; }
+[data-theme="dark"] #dice-colors{ border-top-color:#303030; }
+[data-theme="dark"] #dice-colors label{ color:#8a8a8a; }
+[data-theme="dark"] #dice-colors input[type="color"]{ border-color:#3d3d3d; }
+[data-theme="dark"] #dice-card,
+[data-theme="dark"] #dicelog-card{ background:#1e1e1e; color:#eaeaea; }
+[data-theme="dark"] #dice-q{ background:#2a2a2a; border-color:#3d3d3d; color:#eaeaea; }
+[data-theme="dark"] #dice-q::placeholder{ color:#6d6d6d; }
+[data-theme="dark"] #dice-x,
+[data-theme="dark"] #dicelog-x,
+[data-theme="dark"] #dice-mic,
+[data-theme="dark"] #dicelog-ops button{ background:#2f2f2f; color:#bbb; }
+[data-theme="dark"] #dice-logbtn{ color:#8a8a8a; }
+[data-theme="dark"] #dicelog-head,
+[data-theme="dark"] #dicelog-list .row{ border-color:#2f2f2f; }
+[data-theme="dark"] #dicelog-title{ color:#eaeaea; }
+[data-theme="dark"] #dicelog-list .row span{ color:#aaa; }
+[data-theme="dark"] #dicelog-list .row .ck{ border-color:#555; }
+[data-theme="dark"] #dicelog-list .row.sel .ck{ background:#f2f2f2; border-color:#f2f2f2; }
+[data-theme="dark"] #dicelog-list .row.sel .ck::after{ border-color:#1e1e1e; }
+[data-theme="dark"] #dicelog-del{ background:#f2f2f2 !important; color:#1e1e1e !important; }
+#dice-hint{ margin-top:20px; font-size:11px; color:#bbb; letter-spacing:.15em; min-height:1em; }
+#dice-btns{ display:flex; gap:10px; margin-top:18px; justify-content:center; }
+#dice-roll{ width:152px; flex:none; height:46px; border:0; border-radius:999px; background:#111; color:#fff;
   font-size:15px; letter-spacing:.2em; font-family:inherit; cursor:pointer; }
 #dice-roll:active{ transform:scale(.98); }
 #dice-close{ width:88px; height:46px; border:0; border-radius:999px; background:#eee; color:#555;
@@ -88559,6 +88649,39 @@ lastHeal: his
 #dice-mic:active{ transform:translateY(-50%) scale(.94); }
 #dice-mic.on{ background:#e02b2b; color:#fff; }
 #dice-mic.off{ opacity:.4; }
+#dice-card{ position:relative; }
+#dice-x{ position:absolute; right:10px; top:10px; width:28px; height:28px; border:0; border-radius:50%;
+  background:#f2f2f2; color:#999; font-size:13px; line-height:1; cursor:pointer; padding:0; }
+#dice-qwrap{ margin-top:14px; }
+/* ---------- 投骰记录：独立页面 ---------- */
+#dicelog-mask{ position:fixed; inset:0; z-index:100000; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.45); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+#dicelog-mask.on{ display:flex; }
+#dicelog-card{ width:min(340px,88vw); max-height:76vh; display:flex; flex-direction:column;
+  padding:18px 16px 12px; border-radius:22px; background:#fff; color:#111;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif; }
+#dicelog-head{ position:relative; display:flex; align-items:center; justify-content:space-between;
+  padding-bottom:11px; border-bottom:1px solid #eee; }
+#dicelog-title{ font-size:14px; letter-spacing:.1em; color:#333; }
+#dicelog-ops{ display:flex; gap:8px; }
+#dicelog-ops button{ border:0; border-radius:999px; background:#f2f2f2; color:#555; font-size:12px;
+  font-family:inherit; padding:6px 12px; cursor:pointer; }
+#dicelog-x{ position:absolute; right:-6px; top:-22px; width:28px; height:28px; border:0; border-radius:50%;
+  background:#f2f2f2; color:#999; font-size:13px; line-height:1; cursor:pointer; padding:0; }
+#dicelog-list{ flex:1; min-height:0; overflow-y:auto; margin-top:4px; }
+#dicelog-list .row{ display:flex; align-items:center; gap:10px; padding:9px 2px; border-bottom:1px solid #f6f6f6; }
+#dicelog-list .row .ck{ width:19px; height:19px; border-radius:50%; border:1.5px solid #d5d5d5;
+  flex:none; position:relative; box-sizing:border-box; }
+#dicelog-list .row.sel .ck{ background:#111; border-color:#111; }
+#dicelog-list .row.sel .ck::after{ content:""; position:absolute; left:5px; top:2px; width:5px; height:9px;
+  border:2px solid #fff; border-top:0; border-left:0; transform:rotate(45deg); }
+#dicelog-list .row b{ font-size:17px; font-weight:800; color:#e02b2b; min-width:20px; text-align:right; }
+[data-theme="dark"] #dicelog-list .row b{ color:#ff5a5a; }
+#dicelog-list .row span{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-size:13px; color:#666; }
+#dicelog-list .row i{ font-style:normal; color:#c4c4c4; font-size:10px; }
+#dicelog-list .empty{ text-align:center; color:#c8c8c8; font-size:12px; padding:30px 0; }
 #dice-log-head{ display:flex; align-items:center; justify-content:space-between;
   margin-top:16px; padding-top:11px; border-top:1px solid #eee;
   font-size:11px; color:#aaa; letter-spacing:.12em; }
@@ -88574,22 +88697,46 @@ lastHeal: his
 </style>
 <div id="dice-mask">
   <div id="dice-card">
-    <p id="dice-title">问个问题，投骰子</p>
+    <button id="dice-logbtn" type="button">记录</button>
+    <button id="dice-x" type="button" aria-label="关闭">✕</button>
+    <div id="dice-face"><div id="dice-cube"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div id="dice-result">—</div>
+    <div id="dice-sub"></div>
     <div id="dice-qwrap">
-      <input id="dice-q" type="text" maxlength="40" placeholder="想问什么？">
+      <input id="dice-q" type="text" maxlength="40" placeholder="想问什么？（可留空）">
       <button id="dice-mic" type="button" title="按住说话" aria-label="按住说话"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.6" width="6" height="10.8" rx="3"/><path d="M5.6 11.2a6.4 6.4 0 0012.8 0"/><path d="M12 17.6V21"/></svg></button>
     </div>
-    <div id="dice-face"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div id="dice-hint">点下面投掷</div>
     <div id="dice-btns">
-      <button id="dice-roll" type="button">投 骰 子</button>
-      <button id="dice-close" type="button">关闭</button>
+      <button id="dice-roll" type="button">掷 骰 子</button>
     </div>
-    <div id="dice-log-head">
-      <span>投骰记录</span>
-      <button id="dice-clear" type="button">清空</button>
+    <div id="dice-hint">点上面掷骰子</div>
+    <button id="dice-stylebtn" type="button" title="骰子配色" aria-label="骰子配色"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><circle cx="9.4" cy="9.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="14.6" cy="9.6" r="1.15" fill="currentColor" stroke="none"/><circle cx="9.8" cy="14.6" r="1.15" fill="currentColor" stroke="none"/></svg></button>
+  </div>
+</div>
+<!-- [骰子] 投骰记录：独立页面，支持单选/多选删除 -->
+<div id="dicelog-mask">
+  <div id="dicelog-card">
+    <div id="dicelog-head">
+      <button id="dicelog-x" type="button" aria-label="关闭">✕</button>
+      <span id="dicelog-title">投骰记录</span>
+      <span id="dicelog-ops">
+        <button id="dicelog-all" type="button">全选</button>
+        <button id="dicelog-del" type="button">删除</button>
+      </span>
     </div>
-    <div id="dice-log"></div>
+    <div id="dicelog-list"></div>
+  </div>
+</div>
+<!-- [骰子] 配色页：独立页面，入口在骰子卡片右下角 -->
+<div id="dicestyle-mask">
+  <div id="dicestyle-card">
+    <div id="dicestyle-head">
+      <span>骰子配色</span>
+      <button id="dicestyle-x" type="button" aria-label="关闭">✕</button>
+    </div>
+    <label class="srow"><span>骰子底色</span><input type="color" id="dice-bg" value="#efeff4"></label>
+    <label class="srow"><span>点数颜色</span><input type="color" id="dice-pip" value="#5b3fd6"></label>
+    <label class="srow"><span>外框托底</span><input type="color" id="dice-pad" value="#e9eaf0"></label>
   </div>
 </div>
 <script>
@@ -88598,16 +88745,70 @@ lastHeal: his
   var face  = document.getElementById('dice-face');
   var hint  = document.getElementById('dice-hint');
   var roll  = document.getElementById('dice-roll');
-  var shutB = document.getElementById('dice-close');
-  var qEl   = document.getElementById('dice-q');
-  var logEl = document.getElementById('dice-log');
-  var micEl = document.getElementById('dice-mic');
-  var clrEl = document.getElementById('dice-clear');
-  var timer = null;
+  var xEl    = document.getElementById('dice-x');
+  var qEl    = document.getElementById('dice-q');
+  var resEl  = document.getElementById('dice-result');
+  var subEl  = document.getElementById('dice-sub');
+  var bgEl   = document.getElementById('dice-bg');
+  var pipEl  = document.getElementById('dice-pip');
+
+  /* ---------- 骰子配色：独立页面，存在本机 ---------- */
+  var STYLE_KEY = 'xia-yu-zhou.dice-style';
+  var padEl  = document.getElementById('dice-pad');
+  var stMask = document.getElementById('dicestyle-mask');
+  var stX    = document.getElementById('dicestyle-x');
+  var stBtn  = document.getElementById('dice-stylebtn');
+
+  function curStyle () {
+    return [ bgEl  ? bgEl.value  : '#efeff4',
+             pipEl ? pipEl.value : '#5b3fd6',
+             padEl ? padEl.value : '#e9eaf0' ];
+  }
+  function applyStyle () {
+    var c = curStyle(), r = document.documentElement.style;
+    r.setProperty('--dice-bg',  c[0]);
+    r.setProperty('--dice-pip', c[1]);
+    r.setProperty('--dice-pad', c[2]);
+  }
+  function saveStyle () {
+    var c = curStyle();
+    try { localStorage.setItem(STYLE_KEY, JSON.stringify({ bg: c[0], pip: c[1], pad: c[2] })); } catch (e) {}
+  }
+  (function () {
+    var o = null;
+    try { o = JSON.parse(localStorage.getItem(STYLE_KEY) || 'null'); } catch (e) {}
+    if (o) {
+      if (typeof o.bg  === 'string' && bgEl)  bgEl.value  = o.bg;
+      if (typeof o.pip === 'string' && pipEl) pipEl.value = o.pip;
+      if (typeof o.pad === 'string' && padEl) padEl.value = o.pad;
+    }
+    applyStyle();
+  })();
+  function bindColor (el) {
+    if (!el) return;
+    el.addEventListener('input', applyStyle);
+    el.addEventListener('change', saveStyle);
+  }
+  bindColor(bgEl); bindColor(pipEl); bindColor(padEl);
+
+  function openStyle ()  { applyStyle(); if (stMask) stMask.classList.add('on'); }
+  function shutStyle ()  { if (stMask) stMask.classList.remove('on'); }
+  if (stBtn)  stBtn.addEventListener('click', openStyle);
+  if (stX)    stX.addEventListener('click', shutStyle);
+  if (stMask) stMask.addEventListener('click', function (e) { if (e.target === stMask) shutStyle(); });
+  var micEl  = document.getElementById('dice-mic');
+  var logBtn = document.getElementById('dice-logbtn');
+  var listEl = document.getElementById('dicelog-list');
+  var logMask= document.getElementById('dicelog-mask');
+  var logX   = document.getElementById('dicelog-x');
+  var logAll = document.getElementById('dicelog-all');
+  var logDel = document.getElementById('dicelog-del');
+  var timer  = null;
 
   /* ---------- 投骰记录（存本机） ---------- */
   var LOG_KEY = 'xia-yu-zhou.dice-log';
   var MAX_LOG = 50;
+  var picked = {};                 /* 记录页里被勾选的下标 */
 
   function readLog () {
     try { var a = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); return Array.isArray(a) ? a : []; }
@@ -88617,20 +88818,21 @@ lastHeal: his
     try { localStorage.setItem(LOG_KEY, JSON.stringify(a.slice(0, MAX_LOG))); } catch (e) {}
   }
   function renderLog () {
-    if (!logEl) return;
+    if (!listEl) return;
     var a = readLog();
-    if (!a.length) { logEl.innerHTML = '<div class="empty">还没有记录</div>'; return; }
+    if (!a.length) { listEl.innerHTML = '<div class="empty">还没有记录</div>'; return; }
     var html = '';
     for (var i = 0; i < a.length; i++) {
       var e = a[i];
       var q = String(e.q || '').replace(/[<>&]/g, '');
-      html += '<div class="row">' +
-                '<b class="' + (e.v === 1 ? 'r' : '') + '">' + e.v + '</b>' +
+      html += '<div class="row' + (picked[i] ? ' sel' : '') + '" data-i="' + i + '">' +
+                '<span class="ck"></span>' +
                 '<span>' + (q || '（没写问题）') + '</span>' +
                 '<i>' + (e.t || '') + '</i>' +
+                '<b>' + e.v + '</b>' +
               '</div>';
     }
-    logEl.innerHTML = html;
+    listEl.innerHTML = html;
   }
   function pushLog (v, q) {
     var a = readLog();
@@ -88638,10 +88840,81 @@ lastHeal: his
     var p = function (n) { return n < 10 ? '0' + n : '' + n; };
     a.unshift({ v: v, q: q, t: (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) });
     writeLog(a);
-    renderLog();
+    picked = {};
   }
-  if (clrEl) clrEl.addEventListener('click', function () {
-    try { localStorage.removeItem(LOG_KEY); } catch (e) {}
+  function openLog () { picked = {}; renderLog(); if (logMask) logMask.classList.add('on'); }
+  function shutLog () { if (logMask) logMask.classList.remove('on'); }
+
+  if (logBtn)  logBtn.addEventListener('click', openLog);
+  if (logX)    logX.addEventListener('click', shutLog);
+  if (logMask) logMask.addEventListener('click', function (e) { if (e.target === logMask) shutLog(); });
+
+  /* 按住往下拖即可连续多选（像系统邮件那样），单击仍是单独切换 */
+  var dragging = false, dragOn = 1, lastIdx = -1;
+
+  function rowAt (x, y) {
+    var el = document.elementFromPoint(x, y);
+    while (el && el !== listEl && !el.getAttribute('data-i')) el = el.parentNode;
+    return (el && el !== listEl) ? el : null;
+  }
+  function markRow (row, on) {
+    if (!row) return;
+    var i = row.getAttribute('data-i');
+    if (on) { picked[i] = 1; } else { delete picked[i]; }
+    row.classList.toggle('sel', !!on);
+  }
+
+  if (listEl) {
+    listEl.addEventListener('pointerdown', function (e) {
+      var row = rowAt(e.clientX, e.clientY);
+      if (!row) return;
+      e.preventDefault();
+      dragging = true;
+      dragOn = picked[row.getAttribute('data-i')] ? 0 : 1;  /* 起始行已选 → 本次拖动是取消 */
+      lastIdx = Number(row.getAttribute('data-i'));
+      markRow(row, !!dragOn);
+    });
+
+    listEl.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      e.preventDefault();
+      var row = rowAt(e.clientX, e.clientY);
+      if (!row) return;
+      var i = Number(row.getAttribute('data-i'));
+      if (i === lastIdx) return;
+      var from = Math.min(lastIdx, i), to = Math.max(lastIdx, i);
+      var rows = listEl.querySelectorAll('.row');
+      for (var k = 0; k < rows.length; k++) {          /* 整段刷过去，快速拖也不漏 */
+        var ri = Number(rows[k].getAttribute('data-i'));
+        if (ri >= from && ri <= to) markRow(rows[k], !!dragOn);
+      }
+      lastIdx = i;
+    });
+
+    function endDrag () { dragging = false; lastIdx = -1; }
+    listEl.addEventListener('pointerup', endDrag);
+    listEl.addEventListener('pointercancel', endDrag);
+    listEl.addEventListener('pointerleave', endDrag);
+  }
+
+  /* 全选 / 取消全选 */
+  if (logAll) logAll.addEventListener('click', function () {
+    var a = readLog(), all = true;
+    for (var i = 0; i < a.length; i++) if (!picked[i]) { all = false; break; }
+    picked = {};
+    if (!all) for (var j = 0; j < a.length; j++) picked[j] = 1;
+    renderLog();
+  });
+
+  /* 删除选中 */
+  if (logDel) logDel.addEventListener('click', function () {
+    var idx = [];
+    for (var k in picked) if (picked[k]) idx.push(Number(k));
+    if (!idx.length) { alert('先点一下要删除的记录'); return; }
+    var a = readLog(), keep = [];
+    for (var m = 0; m < a.length; m++) if (idx.indexOf(m) < 0) keep.push(a[m]);
+    writeLog(keep);
+    picked = {};
     renderLog();
   });
 
@@ -88654,7 +88927,8 @@ lastHeal: his
     5: [0, 2, 4, 6, 8],
     6: [0, 2, 3, 5, 6, 8]
   };
-  var cells = face.querySelectorAll('i');
+  var cube  = document.getElementById('dice-cube');
+  var cells = cube.querySelectorAll('i');
 
   function open () {
     mask.classList.add('on');
@@ -88670,16 +88944,25 @@ lastHeal: his
     for (var i = 0; i < cells.length; i++) {
       cells[i].className = (on.indexOf(i) > -1) ? 'on' : '';
     }
-    face.className = (v === 1) ? 'red' : '';
+    /* 用 toggle 而不是直接改 className，否则会把 rolling 动画类冲掉 */
+    cube.classList.toggle('red', v === 1);
+    /* 结果放大显示 */
+    if (resEl) {
+      resEl.textContent = v ? (v + ' 点') : '—';
+      resEl.classList.toggle('red', v === 1);
+    }
+    if (subEl) subEl.textContent = v ? '这是刚刚摇出的结果。' : '';
   }
   function doRoll () {
     if (timer) return;
     var n = 0;
     hint.textContent = '投掷中…';
+    cube.classList.add('rolling');          /* 外框不动，里面那颗小骰子翻滚 */
     timer = setInterval(function () {
       show(1 + Math.floor(Math.random() * 6));
-      if (++n >= 12) {
+      if (++n >= 14) {
         clearInterval(timer); timer = null;
+        cube.classList.remove('rolling');
         var f = 1 + Math.floor(Math.random() * 6);
         show(f);
         hint.textContent = (f === 1) ? '1 点 · 红色的那种' : (f + ' 点');
@@ -88774,7 +89057,7 @@ lastHeal: his
   }
 
   roll.addEventListener('click', doRoll);
-  shutB.addEventListener('click', shut);
+  if (xEl) xEl.addEventListener('click', shut);
   mask.addEventListener('click', function (e) { if (e.target === mask) shut(); });
 
   /* 浮层打开时刷新记录 */
