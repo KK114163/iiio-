@@ -93,13 +93,13 @@
 
     /* 磨砂色与透明度由 --pod-tint / --pod-alpha 驱动（右下角封面设置可调） */
     background:linear-gradient(180deg,
-                rgb(var(--pod-tint) / calc(.10 * var(--pod-alpha))),
-                rgb(var(--pod-tint) / calc(.045 * var(--pod-alpha))) 46%,
-                rgb(var(--pod-tint) / calc(.085 * var(--pod-alpha))));
+                rgb(var(--pod-tint) / var(--pod-a1, .10)),
+                rgb(var(--pod-tint) / var(--pod-a2, .045)) 46%,
+                rgb(var(--pod-tint) / var(--pod-a3, .085)));
     border:1px solid var(--edge);
     /* 半磨砂：模糊度别拉满，圈内还能看出背景的色块和轮廓 */
-    backdrop-filter:blur(14px) saturate(1.12);
-    -webkit-backdrop-filter:blur(14px) saturate(1.12);
+    backdrop-filter:blur(var(--pod-blur, 14px)) saturate(1.12);
+    -webkit-backdrop-filter:blur(var(--pod-blur, 14px)) saturate(1.12);
     box-shadow:0 30px 70px rgba(0,0,0,.50),
                inset 0 1px 0 rgba(255,255,255,.20),
                inset 0 -1px 0 rgba(255,255,255,.06);
@@ -616,7 +616,8 @@
       <p class="block-label">整体字体</p>
       <div class="chips" id="fonts"></div>
       <div class="chips" style="margin-top:9px">
-        <button class="chip" id="font-import" type="button">＋ 导入字体</button>
+        <button class="chip" id="font-import" type="button">＋ 选择字体文件</button>
+        <button class="chip" id="font-link" type="button">🔗 粘贴字体链接</button>
       </div>
       <input type="file" id="font-file" accept=".ttf,.otf,.woff,.woff2" hidden>
     </div>
@@ -708,6 +709,7 @@
   var titleEl  = document.querySelector('.title');
   var fontImport = document.getElementById('font-import');
   var fontFile   = document.getElementById('font-file');
+  var fontLink   = document.getElementById('font-link');
 
   /* 页面写死的默认文案，作为输入框留空时的兜底 */
   var DEF_TITLE = titleEl ? titleEl.textContent : '霞与昼';
@@ -722,7 +724,8 @@
   /* ================= 封面设置 ================= */
   var COVER = { font:'default', bg:'', titleColor:'#f6f6f6', enterColor:'#000000',
                 titleText:'', enterText:'',                       /* '' = 用页面默认文案 */
-                podColor:'#ffffff', podAlpha:1, podAuto:true };
+                podColor:'#ffffff', podAlpha:1, podAuto:true,
+                fontLinks:[] };   /* 从链接导入的字体：[{key,url}] */
 
   function loadCover () {
     try {
@@ -737,6 +740,7 @@
         if (typeof o.podColor === 'string') COVER.podColor = o.podColor;
         if (typeof o.podAlpha === 'number') COVER.podAlpha = o.podAlpha;
         if (typeof o.podAuto  === 'boolean') COVER.podAuto = o.podAuto;
+        if (Array.isArray(o.fontLinks)) COVER.fontLinks = o.fontLinks;
       }
     } catch (e) {}
   }
@@ -769,7 +773,7 @@
     if (txtEnter && txtEnter.value !== COVER.enterText) txtEnter.value = COVER.enterText;
 
     /* 胶囊磨砂：颜色 + 透明度 */
-    document.documentElement.style.setProperty('--pod-alpha', String(COVER.podAlpha));
+    applyPodAlpha(COVER.podAlpha);
     applyPodTint();
     if (colPod && colPod.value !== COVER.podColor) colPod.value = COVER.podColor;
     if (elPodAuto) elPodAuto.checked = !!COVER.podAuto;
@@ -930,10 +934,21 @@
     elPodAlpha.addEventListener('input', function (e) {
       e.stopPropagation();
       COVER.podAlpha = Number(elPodAlpha.value) / 100;
-      document.documentElement.style.setProperty('--pod-alpha', String(COVER.podAlpha));
+      applyPodAlpha(COVER.podAlpha);
       if (elPodAlphaVal) elPodAlphaVal.textContent = elPodAlpha.value + '%';
     });
     elPodAlpha.addEventListener('change', function () { saveCover(); });
+  }
+
+  /* 透明度：三档渐变的不透明度 + 模糊半径都随倍率走。
+     调到 0 时模糊一起归零，胶囊就变成一块完全通透的玻璃，背景原样可见。 */
+  function applyPodAlpha (a) {
+    var s = document.documentElement.style;
+    s.setProperty('--pod-alpha', String(a));
+    s.setProperty('--pod-a1', String(.10  * a));
+    s.setProperty('--pod-a2', String(.045 * a));
+    s.setProperty('--pod-a3', String(.085 * a));
+    s.setProperty('--pod-blur', (14 * a).toFixed(1) + 'px');
   }
 
   /* ---------- 磨砂色计算 ---------- */
@@ -1194,7 +1209,13 @@
           });
         }).catch(function () {});
       });
-      return Promise.all(jobs);
+      return Promise.all(jobs).then(function () {
+        /* 恢复从链接导入的字体 */
+        var links = COVER.fontLinks || [];
+        return Promise.all(links.map(function (x) {
+          return registerUrlFont(x.url).catch(function () {});
+        }));
+      });
     }).then(renderFonts, renderFonts);
   }
 
@@ -1211,6 +1232,44 @@
     fontImport.addEventListener('click', function (e) {
       e.stopPropagation();
       fontFile.click();
+    });
+  }
+
+  /* 从链接导入：粘贴字体文件直链（.ttf/.otf/.woff/.woff2）即可，不用先下载到手机 */
+  function registerUrlFont (url) {
+    var base = url.split('/').pop().split('?')[0].replace(/\.[^.]+$/, '');
+    var name = (base || '链接字体').slice(0, 8);
+    var key  = 'l' + String(url).replace(/[^0-9a-zA-Z]/g, '').slice(-24);
+    var family = 'uf-' + key;
+    return new FontFace(family, 'url("' + url + '")').load().then(function (f) {
+      document.fonts.add(f);
+      USERFONTS = USERFONTS.filter(function (x) { return x.key !== key; });
+      USERFONTS.push({ key: key, user: true, name: name, family: family,
+                       stack: '"' + family + '", sans-serif', url: url });
+      return key;
+    });
+  }
+
+  if (fontLink) {
+    fontLink.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var url = prompt('粘贴字体文件直链（.ttf / .otf / .woff / .woff2）：\n\n' +
+                       '· 需要是「直接指向字体文件」的链接\n' +
+                       '· 页面链接（如 fonts.google.com 的介绍页）不行');
+      if (!url) return;
+      url = url.trim();
+      if (!/^https?:\/\//i.test(url)) { note('链接要以 http:// 或 https:// 开头'); return; }
+      registerUrlFont(url).then(function (key) {
+        renderFonts();
+        COVER.font = key;
+        applyCover();
+        COVER.fontLinks = (COVER.fontLinks || []).filter(function (x) { return x.key !== key; });
+        COVER.fontLinks.push({ key: key, url: url });
+        saveCover();
+        note('链接字体已导入');
+      }).catch(function () {
+        note('导入失败：链接可能不是字体文件，或对方不允许跨域');
+      });
     });
   }
   if (fontFile) {
