@@ -8992,8 +8992,8 @@ html.ios-pwa-standalone:not(.ios-fs-active) body,
 html.tablet.ios-pwa-standalone:not(.ios-fs-active) body { align-items:flex-start; }
 html.ios-pwa-standalone:not(.ios-fs-active) .phone,
 html.tablet.ios-pwa-standalone:not(.ios-fs-active) .phone {
-  height:100dvh !important;
-  min-height:0 !important;
+  /* 注意：这里曾经写过 height:100dvh，导致键盘弹出时整个界面跳动、输入框被顶到键盘后面。
+     dvh 会随键盘连续变化，不能用在主容器高度上。高度交还给应用自己控制。 */
   margin-top:0 !important;
 }
 
@@ -23349,7 +23349,7 @@ if (addBtn) slide.insertBefore(node, addBtn); else slide.appendChild(node);
 const pagesVal = document.getElementById('desk-pages-val');
 const delPageRow = document.getElementById('row-desk-del-page');
 const pageBgsBox = document.getElementById('desk-page-bgs');
-const DESK_PAGE_MAX = 5;
+const DESK_PAGE_MAX = 2;   /* [锁定两页] 原为 5；改成 2 后，无论存储里写几，桌面最多只有两页 */
 const DESK_PAGE_MIN = 2;
 const deskPageCount = () => {
 const v = parseInt(store.get('desk-page-count'), 10);
@@ -42652,10 +42652,10 @@ if (rgGenRow) rgGenRow.addEventListener('click', () => { try { ls.set('reply-gui
 (function () {
 const ls = window.activeStore();
 const DEFAULTS = {
-'ta-msg': 30,   // TA 收藏我发的聊天消息概率
-'ta-card': 30,  // TA 收藏互动卡片概率
-'ta-mail': 30,  // TA 收藏我的回信概率
-'ta-feed': 30   // TA 收藏我的朋友圈动态概率
+'ta-msg': 2,    // TA 收藏我发的聊天消息概率（原 30，改为 2）
+'ta-card': 2,   // TA 收藏互动卡片概率（原 30，改为 2）
+'ta-mail': 2,   // TA 收藏我的回信概率（原 30，改为 2）
+'ta-feed': 2    // TA 收藏我的朋友圈动态概率（原 30，改为 2）
 };
 function readNum(k) {
 const v = ls.get('fav-' + k);
