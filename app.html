@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual">
-<title>Mochi 字卡传讯（完全免费·禁止倒卖）</title>
+<title>霞与昼</title>
 <meta name="description" content="情侣专属的摸鱼字卡聊天模拟器。本站完全免费，任何收费均为倒卖诈骗；唯一作者：小红书@言序（1842523578）。如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家。">
 <meta name="theme-color" content="#e9e9e9">
 <link rel="manifest" href="./manifest.json">
@@ -14,7 +14,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mochi">
+<meta name="apple-mobile-web-app-title" content="霞与昼">
+<meta name="application-name" content="霞与昼">
 <meta name="format-detection" content="telephone=no,address=no,email=no">
 <!-- v3.6.x：全局无 Referer——网易云外链（music.163.com/song/media/outer/url）
      对带 Referer 的请求返回 403（防盗链），移动端 WebView/Edge 对
@@ -8923,7 +8924,7 @@ transition-duration: .01ms !important;
 .applock-btns .al-primary:active { transform: scale(.98); }
 .applock-btns .al-ghost { border: 1px solid var(--card-border, rgba(0, 0, 0, .1)); background: var(--card-bg-97, #fff); color: var(--soft-ink, #555); }
 </style>
-</head>
+<style>/* [功能精简] 已摸鱼卡移除后，剩下的今日情话卡占满整行 */.mini-row > .mini-card:only-child { flex:1 1 100%; grid-column:1 / -1; }</style></head>
 <body>
   <!-- 开屏加载动画 -->
   <!-- ===== 封面已移除（封面移除补丁）：以下仅为应用运行所需的空壳节点，不含任何显示内容 ===== -->
@@ -8944,7 +8945,7 @@ transition-duration: .01ms !important;
   <div class="phone">
       <div class="phone-bg-mask"></div>
       <div class="statusbar">
-        <span class="brand">Mochi</span>
+        <span class="brand">小世界</span>
         <div class="sb-right">
           <span id="clock">9:41</span>
           <div class="icons">
@@ -8994,17 +8995,8 @@ transition-duration: .01ms !important;
               <div class="mc-top">今日情话</div>
               <div class="mc-b" id="love-quote"></div>
             </div>
-            <div class="mini-card glass" data-card-bg="fish">
-              <div class="mc-top">已摸鱼</div>
-              <div class="mc-b"><b id="fish-days">0</b> 天</div>
-            </div>
           </div>
 
-          <div class="checkin glass" data-desk-widget="checkin" data-card-bg="checkin">
-            <span class="ck-heart">♥</span>
-            <span class="ck-txt">和 TA 一起摸鱼 · 今天也要甜甜的</span>
-            <span class="ck-btn">打卡</span>
-          </div>
 
       <!-- 桌面功能（直接显示） -->
       <div class="app-grid" data-app="main" data-desk-widget="apps">
@@ -9129,10 +9121,6 @@ transition-duration: .01ms !important;
 <div class="app-name">寻踪</div>
 </div>
 <!-- 花园自第三页移入：第二排「花园 此间 同频 伸手」（此间紧随其后为模板静态图标，同频/伸手由 p2-features 追加） -->
-<div class="app" data-app="garden" data-desk-widget="app-garden">
-<div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21h10l-1.5-5h-7z"/><path d="M12 16v-7"/><path d="M12 12c-2 0-3.5-1-3.5-3"/><path d="M12 10c2 0 3.5-1 3.5-3"/><circle cx="12" cy="6" r="2"/></svg></div>
-<div class="app-name">花园</div>
-</div>
 <!-- v3.13.x：此间（梦角世界时间与在场感知）桌面入口——聊天「更多功能」同款页面，从桌面进入返回桌面 -->
 <div class="app" data-app="cjian" data-desk-widget="app-cjian">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 012-2h12a2 2 0 012 2v16"/><path d="M4 21h16"/><path d="M10 21v-6h4v6"/></svg></div>
@@ -9165,10 +9153,6 @@ transition-duration: .01ms !important;
 <div class="app" data-app="period" data-desk-widget="app-period">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2C12 3.2 6 9.2 6 14.2a6 6 0 0 0 12 0c0-5-6-11-6-11z"/><path d="M12 16.4c0 0-2.3-1.4-2.3-2.9a1.25 1.25 0 0 1 2.3-.9 1.25 1.25 0 0 1 2.3.9c0 1.5-2.3 2.9-2.3 2.9z"/></svg></div>
 <div class="app-name">经期记录</div>
-</div>
-<div class="app" data-app="accounting" data-desk-widget="app-accounting">
-<div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M4.5 8h15"/><path d="M10 13l2-2 2 2"/><path d="M12 11v6"/><path d="M10.5 14h3"/></svg></div>
-<div class="app-name">记账</div>
 </div>
 <div class="app" data-app="memo-arc" data-desk-widget="app-memo-arc">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5h5L10 4.5h9a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-12z"/><path d="M12 7.6l1.2 2.7 2.7 1.2-2.7 1.2L12 15.4l-1.2-2.7-2.7-1.2 2.7-1.2z"/></svg></div>
@@ -10033,7 +10017,7 @@ transition-duration: .01ms !important;
         <div class="gs-row"><span style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;"><span>全屏模式（隐藏手机状态栏）</span><span class="tag" id="sf-fullscreen-help" role="button" tabindex="0" aria-haspopup="dialog">功能说明</span></span><label class="toggle"><input type="checkbox" id="sf-fullscreen"><span class="tk"></span></label></div>
         <!-- v3.26.x：全屏模式功能说明——iOS 系统状态栏（时间/电量）由系统控制、任何网页都无法隐藏，
              点「功能说明」标签弹详细说明（fullscreen.js sf-fullscreen-help 绑定 showIosGuide） -->
-        <div class="gs-sub" id="sf-fullscreen-sub">开启后尽量隐藏手机顶部状态栏/浏览器栏，让内容占满全屏。<br>iOS 限制：iPhone 顶部系统状态栏（时间/电量）由系统控制，任何网页都无法隐藏；从主屏幕打开时本开关会让内容顶满屏幕，应用内模拟状态栏（Mochi/时间/电量）下移到系统状态栏正下方、两栏不重叠。</div>
+        <div class="gs-sub" id="sf-fullscreen-sub">开启后尽量隐藏手机顶部状态栏/浏览器栏，让内容占满全屏。<br>iOS 限制：iPhone 顶部系统状态栏（时间/电量）由系统控制，任何网页都无法隐藏；从主屏幕打开时本开关会让内容顶满屏幕，应用内模拟状态栏（小世界/时间/电量）下移到系统状态栏正下方、两栏不重叠。</div>
         <!-- v3.26.x：布局手动兜底——浏览器「桌面版网站」模式会把 UA / screen / 触摸能力 /
              视口整套伪装成桌面，指纹识别必有漏网（vivo Y35 + Edge 连栽三轮）。识别失手时
              用户自己掰回来：本开关（或地址栏 ?mobile=1 / ?pc=1），持久存 localStorage，
@@ -10084,7 +10068,7 @@ transition-duration: .01ms !important;
              不同机型各属其一：开启=声明本机为覆盖形态（恢复 env 顶部避让+全屏高度含 env），
              修「Mochi 行与系统时间重叠」；默认关=系统保留形态（修「底部白带」）。 -->
         <div class="set-row">
-          <div class="txt">顶部避让修正<span class="sub">顶部 Mochi 行与手机时间重叠时开启；底部出现白带时关闭（改后自动刷新）</span></div>
+          <div class="txt">顶部避让修正<span class="sub">顶部小世界行与手机时间重叠时开启；底部出现白带时关闭（改后自动刷新）</span></div>
           <label class="toggle"><input type="checkbox" id="safe-top-force"><span class="tk"></span></label>
         </div>
         <div class="set-row" id="row-screen-diag">
@@ -10113,7 +10097,7 @@ transition-duration: .01ms !important;
           <div class="txt">清除本地数据</div>
         </div>
       </div>
-      <div class="ver">Mochi 字卡传讯 v3.26.574</div>
+      <div class="ver">小世界 v3.26.574</div>
     </div>
 
     <!-- 查看存储（独立页面，v3.26.x） -->
@@ -10401,7 +10385,7 @@ transition-duration: .01ms !important;
         <div class="cal-card glass">
           <div class="lic-hero">
             <div class="lic-hero-top">
-              <div class="lic-title">Mochi 字卡传讯</div>
+              <div class="lic-title">小世界</div>
               <span class="lic-badge">原版</span>
               <span class="lic-ver">v3.26.574</span>
             </div>
@@ -10427,9 +10411,9 @@ transition-duration: .01ms !important;
             <span class="lic-pill">需保留署名</span>
             <span class="lic-pill">注明灵感来源</span>
           </div>
-          <div class="lic-p">Mochi 字卡为<b>原创独立作品（即原版）</b>，代码已在 GitHub 完全公开，支持私人部署，与网站同步更新。</div>
+          <div class="lic-p">小世界为<b>原创独立作品（即原版）</b>，代码已在 GitHub 完全公开，支持私人部署，与网站同步更新。</div>
           <div class="lic-li" style="margin-top:6px">- 可自由二传、二改，支持私人部署，<b>禁止商用</b>，必须保留署名：<b>小红书 @言序（1842523578）</b>（禁止删除或修改）</div>
-          <div class="lic-li">- 借鉴功能或代码，必须标注灵感来源：Mochi 字卡 · 小红书 @言序（1842523578）</div>
+          <div class="lic-li">- 借鉴功能或代码，必须标注灵感来源：小世界 · 小红书 @言序（1842523578）</div>
           <div class="lic-li">- <b>严禁以任何形式收费倒卖本站链接、安装包</b>——本站完全免费，如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家</div>
         </div>
 
@@ -10523,7 +10507,7 @@ transition-duration: .01ms !important;
           <div class="lic-li">发出的红包约 80% 概率被领取并致谢，24 小时未领取自动退回；长按可退回待领红包</div>
           <div class="lic-li">TA 平时也会主动发红包（每天最多 5 次），七夕更爱发大额</div>
           <div class="lic-li">余额不足也能照发照买：直接透支成负数不拦截，后续收红包 / 申请回正</div>
-          <div class="lic-li">「向 Mochi 申请心意币」：点击任意余额行弹出，可给我和 TA 双向充值入账；TA 也会随机向 Mochi 申请（每天最多 2 次）并在聊天留下记录</div>
+          <div class="lic-li">「向小世界申请心意币」：点击任意余额行弹出，可给我和 TA 双向充值入账；TA 也会随机向小世界申请（每天最多 2 次）并在聊天留下记录</div>
           <div class="lic-li">心意市集：220+ 件默认商品分 12 类，支持搜索、自建商品（名字 / 图片 / 价格 / 默认留言）、编辑与恢复默认商品</div>
           <div class="lic-li">送礼给 TA：挑商品写心意留言送出，礼物卡片飞进聊天并同步存进心意柜；TA 每天 5% 概率主动从市集挑礼物回礼（最多 3 次）</div>
           <div class="lic-li">心意柜：收到 / 送出礼物册，「TA 送我的 / 我送 TA 的」分类翻看与统计</div>
@@ -14835,7 +14819,7 @@ const L = [];
 const jobs = []; // 所有异步采集（配额/persisted/远端版本/SW 状态）进这里，最后 Promise.all
 let ver = verCache || '', localTs = localTsCache || 0;
 if (!ver) { try { ver = window.APP_VERSION || ''; } catch (e) {} }
-L.push('Mochi 诊断信息（' + ver + '）');
+L.push('小世界诊断信息（' + ver + '）');
 L.push('时间：' + new Date().toLocaleString() + '（本次启动 ' + BOOT_ID + '#' + BOOT_N + '）');
 L.push('');
 L.push('【更新状态】');
@@ -15942,7 +15926,7 @@ else if (envTop >= 20) mode = '覆盖形态（页面顶到屏幕最顶，系统�
 else if (diff >= 20) mode = '已避让形态（系统已把网页起点放在状态栏下方，页面不应再加顶部 padding）';
 else mode = '无安全区/常规视口';
 add(true, '顶部形态判定：' + mode, 'env=' + envTop + 'px  var(--mochi-safe-top)=' + varTop + 'px  diff(screen−inner)=' + diff + 'px  判定器=' + Fm.form + '/safeTop=' + Fm.safeTop + '/期望底=' + Fm.expBase);
-if (Fm.resStand && !Fm.forceCover) add(true, '歧义形态提示：若顶部 Mochi 行与灵动岛/时间重叠或点不动 → 开启上方【顶部避让修正】开关（自动刷新即修）；若底部白带则保持关闭');
+if (Fm.resStand && !Fm.forceCover) add(true, '歧义形态提示：若顶部小世界行与灵动岛/时间重叠或点不动 → 开启上方【顶部避让修正】开关（自动刷新即修）；若底部白带则保持关闭');
 if (inp.sbTop == null) add(true, '状态栏隐藏（聊天等全屏页），跳过顶位判定');
 if (inp.sbTop != null) {
 const expect = Fm.expTop;
@@ -18387,7 +18371,7 @@ onLink: function (act) { if (act === 'skipqa') qaSkipAsk(items, i, afterAll); }
 }
 function qaSkipAsk(items, i, afterAll) {
 textAsk({
-title: '跳过开屏问答', sub: '暗号是 99 + mochi 字卡生日的 4 位数字，一共 6 个数字。输入暗号后，这台设备以后每次打开都不再问答（不再显示问答层）。提示：时间就在开屏里可以找到，非常简单，解出请勿二传，这么简单真没必要二传。不输入暗号也不影响正常使用。',
+title: '跳过开屏问答', sub: '暗号是 99 + 小世界生日的 4 位数字，一共 6 个数字。输入暗号后，这台设备以后每次打开都不再问答（不再显示问答层）。提示：时间就在开屏里可以找到，非常简单，解出请勿二传，这么简单真没必要二传。不输入暗号也不影响正常使用。',
 placeholder: '输暗号', maxlen: 12, okLabel: '确定', cancelLabel: '返回',
 onSubmit: function (v) {
 if (String(v || '').trim() === QA_SKIP_CODE) {
@@ -18508,7 +18492,7 @@ onCancel: onCancel
 return;
 }
 textAsk({
-title: '验证身份', sub: '本机未设数字密码，请输入开屏问答的暗号继续（暗号是 99 + mochi 字卡生日的 4 位数字，一共 6 个数字）：',
+title: '验证身份', sub: '本机未设数字密码，请输入开屏问答的暗号继续（暗号是 99 + 小世界生日的 4 位数字，一共 6 个数字）：',
 placeholder: '暗号', maxlen: 12, okLabel: '确定', cancelLabel: '取消',
 onSubmit: function (v) {
 if (String(v || '').trim() === QA_SKIP_CODE) { next(); }
@@ -18954,7 +18938,7 @@ const OFFICIAL_NOTICE = 'https://ling233330-star.github.io/mochi/notice.json';
 const MARK_KEY = '小红书@言序（1842523578）';
 const BARS = [
 { tag: '1', title: '防骗提醒', key: 'alert', marks: ['免费', '诈骗', MARK_KEY],
-fallback: 'Mochi字卡网站完全免费，作者只有小红书这一个账号：小红书@言序（1842523578）。如有出现任何收费情况，均为诈骗，注意防止被骗。' },
+fallback: '小世界网站完全免费，作者只有小红书这一个账号：小红书@言序（1842523578）。如有出现任何收费情况，均为诈骗，注意防止被骗。' },
 { tag: '2', title: '转载署名 · 严禁倒卖', key: 'alert2', marks: ['署名', '倒卖', MARK_KEY],
 fallback: '二传、分享本站链接必须标注作者署名：小红书 @言序（1842523578），禁止删除或修改。严禁冒为自己制作、删除篡改署名，或以任何形式收费倒卖本站链接、安装包——本站完全免费，收费即诈骗。如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家。' }
 ];
@@ -21987,7 +21971,7 @@ const blob = new Blob([json], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
 const a = document.createElement('a');
 a.href = url;
-a.download = 'mochi美化方案-' + new Date().toISOString().slice(0, 10) + '.json';
+a.download = '小世界美化方案-' + new Date().toISOString().slice(0, 10) + '.json';
 document.body.appendChild(a);
 a.click();
 setTimeout(() => { try { document.body.removeChild(a); URL.revokeObjectURL(url); } catch (e) {} }, 1000);
@@ -22001,9 +21985,9 @@ return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 const startBeautyExport = (data) => {
 const json = JSON.stringify(data);
 if (json.length > 64 * 1024 * 1024) { toast('方案过大，导出失败'); return; }
-const fname = 'mochi美化方案-' + beautyFileLocalDate() + '.json';
+const fname = '小世界美化方案-' + beautyFileLocalDate() + '.json';
 const doExportFile = () => {
-if (window.mochiExportFile) { window.mochiExportFile(json, fname, 'mochi美化方案'); return; }
+if (window.mochiExportFile) { window.mochiExportFile(json, fname, '小世界美化方案'); return; }
 downloadBeautyFile(json);
 };
 const doCopy = () => {
@@ -28408,7 +28392,7 @@ return m;
 }
 if (rec.special === 'askcoin') {
 m.className = 'msg-poke';
-m.innerHTML = '<span>🪙 ' + escTxt(chatPartnerName()) + ' 向 Mochi 申请了心意币 ¥' + (Number(rec.askFen || 0) / 100).toFixed(2) + '</span>';
+m.innerHTML = '<span>🪙 ' + escTxt(chatPartnerName()) + ' 向小世界申请了心意币 ¥' + (Number(rec.askFen || 0) / 100).toFixed(2) + '</span>';
 appendMsg(m);
 maybeScrollChatBottom(rec.side);
 return m;
@@ -30913,7 +30897,7 @@ function rpRenderBalance() {
 const el = document.getElementById('rp-balance');
 if (!el) return;
 const w = rpWalletGet();
-el.textContent = '心意币 ¥' + (w.myBalance / 100).toFixed(2) + ' · ' + chatPartnerName() + ' ¥' + (w.systemBalance / 100).toFixed(2) + ' · 向 Mochi 申请心意币';
+el.textContent = '心意币 ¥' + (w.myBalance / 100).toFixed(2) + ' · ' + chatPartnerName() + ' ¥' + (w.systemBalance / 100).toFixed(2) + ' · 向小世界申请心意币';
 }
 function rpEditWallet() {
 if (!window.openModal) return;
@@ -30925,10 +30909,10 @@ const fmtYuan = (n) => (Math.round(n * 100) / 100).toFixed(2);
 const hintTxt = () => {
 const w = rpWalletGet();
 return '当前：心意币 ¥' + (w.myBalance / 100).toFixed(2) + ' · ' + taName + ' ¥' + (w.systemBalance / 100).toFixed(2) +
-(doneAny ? '\n已到账，可继续为' + LBL[side] + '申请；留空点【完成】结束' : '\n选择收款方，输入申请金额点【申请】，Mochi 打款后自动入账；留空点【完成】结束');
+(doneAny ? '\n已到账，可继续为' + LBL[side] + '申请；留空点【完成】结束' : '\n选择收款方，输入申请金额点【申请】，小世界打款后自动入账；留空点【完成】结束');
 };
 let ctl = null;
-ctl = window.openModal('向 Mochi 申请心意币', '', (arg) => {
+ctl = window.openModal('向小世界申请心意币', '', (arg) => {
 const picked = (arg === 'my' || arg === 'ta');
 const el = document.getElementById('modal-input');
 const raw = String(picked ? ((el && el.value) || '') : (arg == null ? '' : arg)).trim();
@@ -30942,7 +30926,7 @@ if (target === 'my') w.myBalance += fen;
 else w.systemBalance += fen;
 rpWalletSet(w); rpRenderBalance();
 try { if (window.giftCoinLedgerAdd) window.giftCoinLedgerAdd('ask', target === 'my' ? fen : 0, target === 'ta' ? fen : 0, '聊天申请'); } catch (e) {}
-toast('Mochi 已打款，' + LBL[target] + ' +¥' + fmtYuan(fen / 100));
+toast('小世界已打款，' + LBL[target] + ' +¥' + fmtYuan(fen / 100));
 doneAny = true;
 side = target === 'my' ? 'ta' : 'my';
 if (ctl) {
@@ -36845,10 +36829,10 @@ const doExport = (data) => {
 const json = JSON.stringify(data);
 if (!window.openModal) { toast('导出失败'); return; }
 const d = new Date(); const p2 = (n) => (n < 10 ? '0' : '') + n;
-const fname = 'mochi群聊美化方案-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.json';
+const fname = '小世界群聊美化方案-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.json';
 window.openModal('导出群聊美化方案', '', (v) => {
 if (v === 'file') {
-if (window.mochiExportFile) { window.mochiExportFile(json, fname, 'mochi群聊美化方案'); return; }
+if (window.mochiExportFile) { window.mochiExportFile(json, fname, '小世界群聊美化方案'); return; }
 try {
 const blob = new Blob([json], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -38887,7 +38871,7 @@ const data = JSON.stringify(out, null, 2);
 const blob = new Blob([data], { type: 'application/json' });
 const a = document.createElement('a');
 a.href = URL.createObjectURL(blob);
-a.download = 'mochi字卡库数据.json';
+a.download = '小世界库数据.json';
 document.body.appendChild(a);
 a.click();
 setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 300);
@@ -39332,7 +39316,7 @@ const out = { app: CC_FULL_MARK, v: 1, time: Date.now(), data: data };
 const blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
 const a = document.createElement('a');
 a.href = URL.createObjectURL(blob);
-a.download = 'mochi自定义字卡全量.json';
+a.download = '小世界自定义字卡全量.json';
 document.body.appendChild(a);
 a.click();
 setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 300);
@@ -40224,7 +40208,7 @@ const data = JSON.stringify(mergeWithPublic(loadGroups()), null, 2);
 const blob = new Blob([data], { type: 'application/json' });
 const a = document.createElement('a');
 a.href = URL.createObjectURL(blob);
-a.download = 'mochi字卡库备份.json';
+a.download = '小世界库备份.json';
 document.body.appendChild(a);
 a.click();
 setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 300);
@@ -41549,10 +41533,10 @@ const doExport = (data) => {
 const json = JSON.stringify(data);
 if (!window.openModal) { toast('导出失败'); return; }
 const d = new Date(); const p2 = (n) => (n < 10 ? '0' : '') + n;
-const fname = 'mochi聊天美化方案-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.json';
+const fname = '小世界聊天美化方案-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.json';
 window.openModal('导出聊天美化方案', '', (v) => {
 if (v === 'file') {
-if (window.mochiExportFile) { window.mochiExportFile(json, fname, 'mochi聊天美化方案'); return; }
+if (window.mochiExportFile) { window.mochiExportFile(json, fname, '小世界聊天美化方案'); return; }
 try {
 const blob = new Blob([json], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -42159,43 +42143,43 @@ document.addEventListener('contact-switched', syncHts);
 const uid = window.activePrefix();
 const ls = window.activeStore();
 const DEFAULTS = {
-'rs-min': 1, 'rs-max': 40,
+'rs-min': 5, 'rs-max': 135,
 'reply-min': 1, 'reply-max': 2,
-'rn-prob': 20, 'touch-prob': 3,
-'sticker-prob': 10, 'emoji-prob': 5, 'image-prob': 5, 'voice-prob': 10,
-'kaomoji-prob': 5, 'quote-prob': 30,
-'rc-prob': 25, 'rc-refix': 35, 'cf-prob': 20,
-'py-en': 1, 'py-prob': 50, 'py-min': 2, 'py-max': 5,
+'rn-prob': 2, 'touch-prob': 2,
+'sticker-prob': 10, 'emoji-prob': 0, 'image-prob': 5, 'voice-prob': 2,
+'kaomoji-prob': 5, 'quote-prob': 20,
+'rc-prob': 0, 'rc-refix': 0, 'cf-prob': 20,
+'py-en': 0, 'py-prob': 50, 'py-min': 2, 'py-max': 5,
 'qs-en': 1, 'qs-prob': 25, 'qs-cc': 0, 'qs-one': 1,
 'mjf-en': 0, 'mjf-prob': 20,
-'as-en': 1, 'as-prob': 30, 'as-min': 5, 'as-max': 10,
+'as-en': 1, 'as-prob': 30, 'as-min': 5, 'as-max': 60,
 'as-count-min': 1, 'as-count-max': 2, 'dnd-en': 0,
 'as-badge': 1,
-'ai-rps-en': 1, 'ai-rps-prob': 8, 'ai-game-en': 1, 'ai-game-prob': 5,
-'ai-cuddle-en': 1, 'ai-cuddle-prob': 5,
-'ai-cc-en': 1, 'ai-cc-prob': 4,
+'ai-rps-en': 0, 'ai-rps-prob': 8, 'ai-game-en': 0, 'ai-game-prob': 5,
+'ai-cuddle-en': 1, 'ai-cuddle-prob': 2,
+'ai-cc-en': 1, 'ai-cc-prob': 2,
 'ckq-en': 1, 'ckq-prob': 2, 'ckq-popup-prob': 70, 'ckq-cool': 30,
 'desk-call-prob': 2,
-'ml-min-cards': 20, 'ml-max-cards': 50,
-'ml-write-prob': 30, 'ml-write-min': 1, 'ml-write-max': 480,
-'ml-write-daily-max': 3,
+'ml-min-cards': 10, 'ml-max-cards': 30,
+'ml-write-prob': 10, 'ml-write-min': 10, 'ml-write-max': 1440,
+'ml-write-daily-max': 1,
 'ml-write-en': 1,
-'ml-reply-prob': 80, 'ml-reply-min': 1, 'ml-reply-max': 480,
+'ml-reply-prob': 25, 'ml-reply-min': 10, 'ml-reply-max': 1440,
 'ml-kaomoji-en': 1, 'ml-emoji-en': 1, 'ml-sticker-en': 1,
-'fd-like-prob': 60, 'fd-like-speed-min': 1, 'fd-like-speed-max': 60,
-'fd-comment-prob': 70, 'fd-comment-speed-min': 1, 'fd-comment-speed-max': 60,
-'fd-reply-prob': 60, 'fd-reply-speed-min': 1, 'fd-reply-speed-max': 60,
-'fd-likeback-prob': 50,
-'fd-card-prob': 80, 'fd-max-cards': 5, 'fd-image-prob': 50,
-'fd-post-prob': 40, 'fd-post-daily-max': 5, 'fd-post-cool': 30,
+'fd-like-prob': 10, 'fd-like-speed-min': 10, 'fd-like-speed-max': 300,
+'fd-comment-prob': 10, 'fd-comment-speed-min': 10, 'fd-comment-speed-max': 300,
+'fd-reply-prob': 10, 'fd-reply-speed-min': 10, 'fd-reply-speed-max': 300,
+'fd-likeback-prob': 10,
+'fd-card-prob': 10, 'fd-max-cards': 10, 'fd-image-prob': 10,
+'fd-post-prob': 10, 'fd-post-daily-max': 2, 'fd-post-cool': 30,
 'fd-post-en': 1,
-'fd-min-interval': 1, 'fd-max-interval': 720,
-'fd-min-cards-post': 4, 'fd-max-cards-post': 15,
-'fd-post-kaomoji': 10, 'fd-post-emoji': 10, 'fd-post-sticker': 30, 'fd-post-image': 30,
+'fd-min-interval': 30, 'fd-max-interval': 1440,
+'fd-min-cards-post': 2, 'fd-max-cards-post': 15,
+'fd-post-kaomoji': 5, 'fd-post-emoji': 5, 'fd-post-sticker': 10, 'fd-post-image': 10,
 'call-incoming': 15, 'call-pickup': 70, 'call-busy': 15, 'call-reject': 15, 'call-hangup': 2,
 'call-resume': 1,
 'call-no-hangup': 0,
-'cs-normal': 0, 'cs-trigger-name': 1, 'cs-trigger-bar': 0,
+'cs-normal': 0, 'cs-trigger-name': 0, 'cs-trigger-bar': 0,
 'gc-prob': 60, 'gc-rs-min': 1, 'gc-rs-max': 40,
 'gc-reply-min': 1, 'gc-reply-max': 2,
 'gc-touch-prob': 3, 'gc-sticker-prob': 10, 'gc-emoji-prob': 5, 'gc-image-prob': 5, 'gc-voice-prob': 10,
@@ -47057,7 +47041,7 @@ const artwork = m.cover ? [{ src: m.cover, sizes: '512x512', type: 'image/jpeg' 
 navigator.mediaSession.metadata = new window.MediaMetadata({
 title: m.name || '未知歌曲',
 artist: m.artist || '未知歌手',
-album: 'Mochi 音乐',
+album: '小世界音乐',
 artwork: artwork
 });
 }
@@ -55544,8 +55528,8 @@ if (!('mediaSession' in navigator) || !navigator.mediaSession || !window.MediaMe
 if (window.__musicPlaying) return; // 音乐在播，保留音乐的媒体条
 if (musicIntentPlaying()) return; // 音乐还想播（瞬断暂停中），不覆盖歌曲媒体条
 navigator.mediaSession.metadata = new window.MediaMetadata({
-title: 'Mochi 后台保活',
-artist: 'mochi',
+title: '小世界后台保活',
+artist: '小世界',
 album: '后台消息提醒运行中'
 });
 try { navigator.mediaSession.playbackState = 'playing'; } catch (e) {}
@@ -56672,7 +56656,7 @@ const name = store.get('lbl-partner') || (window.taWord ? window.taWord() : 'TA'
 const myName = store.get('lbl-user') || '我';
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 if (!list.length) {
-el.innerHTML = '<div class="ta-empty">' + (kind === 'ask' ? '暂无申请记录（可点心意币余额行向 Mochi 申请）' : '暂无赚钱记录（玩游戏、种花、钓鱼都能赚心意币）') + '</div>';
+el.innerHTML = '<div class="ta-empty">' + (kind === 'ask' ? '暂无申请记录（可点心意币余额行向小世界申请）' : '暂无赚钱记录（玩游戏、种花、钓鱼都能赚心意币）') + '</div>';
 return;
 }
 const yuan = (fen) => (fen / 100).toFixed(2);
@@ -56685,7 +56669,7 @@ if (x.myFen) parts.push(myName + ' +¥' + yuan(x.myFen));
 if (x.taFen) parts.push(name + ' +¥' + yuan(x.taFen));
 line = parts.join(' · ') || '—';
 }
-const src = x.src ? esc(x.src) : (kind === 'ask' ? '向 Mochi 申请' : '赚钱');
+const src = x.src ? esc(x.src) : (kind === 'ask' ? '向小世界申请' : '赚钱');
 return '<div class="tc-listitem"><div class="tc-li-top"><span class="tc-li-q">🪙 ' + src + '</span><span class="tc-li-time">' + fmtDT(x.ts) + '</span></div>' +
 '<div class="tc-li-line">' + line + '</div></div>';
 }).join('');
@@ -61715,7 +61699,7 @@ msgs.filter(m => m && m.special === 'askcoin').map(m => ({
 main: '+¥' + (Number(m.askFen || 0) / 100).toFixed(2),
 sub: fmtMDHM(m.askTs || m.ts)
 })),
-escH(name) + ' 还没有向 Mochi 申请过') +
+escH(name) + ' 还没有向小世界申请过') +
 (function () {
 const GAME_SPECIAL = { brick: '双人打砖块', pong: '乒乓', snake: '贪吃蛇', memory: '记忆翻牌', rps: '猜拳', c4: '四子棋', ms: '合作扫雷' };
 const GAME_KIND = { rps: '猜拳', pong: 'Pong', snake: '双人贪吃蛇', gomoku: '五子棋', linkup: '连连看', match3: '消消乐', auction: '心意币拍卖会' };   // TA 主动邀请（cuddle 贴贴不算游戏）
@@ -63298,12 +63282,12 @@ slide.dataset.desk = String(curCnt);
 const grid = document.createElement('div');
 grid.className = 'app-grid';
 grid.setAttribute('data-app', 'tp-page');
-grid.appendChild(tpApp); grid.appendChild(ssApp); grid.appendChild(waterApp); grid.appendChild(eatApp); grid.appendChild(pomoApp); grid.appendChild(piggyApp);
+grid.appendChild(tpApp); grid.appendChild(ssApp); grid.appendChild(eatApp); grid.appendChild(pomoApp);
 slide.appendChild(grid);
 pagesBox.appendChild(slide);
 try {
 st0.set('desk-page-count', String(curCnt + 1));
-layArr.push(['app-tongpin', 'app-shenshou', 'app-water', 'app-eat', 'app-pomo', 'app-piggy']);
+layArr.push(['app-tongpin', 'app-shenshou', 'app-eat', 'app-pomo']);
 st0.set('desk-layout', JSON.stringify(layArr));
 } catch (e) {}
 try { if (window.deskRebuild) window.deskRebuild(); } catch (e) {}
@@ -63316,8 +63300,8 @@ const p3g = document.querySelector('.app-grid.p3-grid');
 if (p2Grid) {
 p2Grid.appendChild(tpApp); p2Grid.appendChild(ssApp);
 } else if (p3g) { p3g.appendChild(tpApp); p3g.appendChild(ssApp); }
-if (p3g) { p3g.appendChild(waterApp); p3g.appendChild(eatApp); p3g.appendChild(piggyApp); p3g.appendChild(pomoApp); }
-else if (p2Grid) { p2Grid.appendChild(waterApp); p2Grid.appendChild(eatApp); p2Grid.appendChild(piggyApp); p2Grid.appendChild(pomoApp); }
+if (p3g) { p3g.appendChild(eatApp); p3g.appendChild(pomoApp); }
+else if (p2Grid) { p2Grid.appendChild(eatApp); p2Grid.appendChild(pomoApp); }
 try { if (window.applyDeskLayout) window.applyDeskLayout(); } catch (e) {}
 }
 const DEF_STATUS = ['在听雨', '在看你写东西', '没睡，在发呆', '刚路过你身边', '在想你', '在发呆', '在看你', '在等你看我'];
@@ -64482,7 +64466,7 @@ return (v !== null && isFinite(v) && v >= 0) ? v : 0;
 const askLimit0 = askLimitGet();
 const ks = ['deposit', 'withdraw', 'ask'];
 const def = [Math.round(p.deposit * 100), Math.round(p.withdraw * 100), Math.round(p.ask * 100), askLimit0];
-const titles = ['设置 · 存钱概率（TA 随机塞心意币）', '设置 · 取钱概率（TA 余额快没时取回）', '设置 · 申请概率（联系人向 Mochi 申请）', '设置 · 申请每日上限（联系人每天最多申请次数）'];
+const titles = ['设置 · 存钱概率（TA 随机塞心意币）', '设置 · 取钱概率（TA 余额快没时取回）', '设置 · 申请概率（联系人向小世界申请）', '设置 · 申请每日上限（联系人每天最多申请次数）'];
 const hints = ['0-100 %，默认 ' + def[0], '0-100 %，默认 ' + def[1], '0-100 %，默认 ' + def[2], '0-999 次，0=不限，默认 ' + (askLimit0 === 0 ? '不限' : askLimit0)];
 let phase = 0;
 function clampU(x) { const n = parseInt(String(x == null ? '' : x).trim(), 10); return isNaN(n) ? def[phase] : Math.max(0, Math.min(100, n)); }
@@ -65417,7 +65401,7 @@ return n;
 function walletSet(w) { const s = wstore(); if (s) s.set(WALLET_KEY, JSON.stringify(w)); }
 window.giftWalletGet = walletGet;
 window.giftWalletSet = walletSet;
-function walletText() { const w = walletGet(); return '心意币 ¥' + fenToYuan(w.myBalance) + ' · ' + partnerName() + ' ¥' + fenToYuan(w.systemBalance) + ' · 向 Mochi 申请心意币'; }
+function walletText() { const w = walletGet(); return '心意币 ¥' + fenToYuan(w.myBalance) + ' · ' + partnerName() + ' ¥' + fenToYuan(w.systemBalance) + ' · 向小世界申请心意币'; }
 function renderGiftBalances() {
 ['gift-balance', 'market-balance'].forEach(function (id) {
 const el = document.getElementById(id);
@@ -65471,10 +65455,10 @@ function fmtYuan(n) { return (Math.round(n * 100) / 100).toFixed(2); }
 function hintTxt() {
 var w = walletGet();
 return '当前：心意币 ¥' + fenToYuan(w.myBalance) + ' · ' + pn + ' ¥' + fenToYuan(w.systemBalance) +
-(doneAny ? '\n已到账，可继续为' + LBL[side] + '申请；留空点【完成】结束' : '\n选择收款方，输入申请金额点【申请】，Mochi 打款后自动入账；留空点【完成】结束');
+(doneAny ? '\n已到账，可继续为' + LBL[side] + '申请；留空点【完成】结束' : '\n选择收款方，输入申请金额点【申请】，小世界打款后自动入账；留空点【完成】结束');
 }
 var ctl = null;
-ctl = window.openModal('向 Mochi 申请心意币', '', function (arg) {
+ctl = window.openModal('向小世界申请心意币', '', function (arg) {
 var picked = (arg === 'my' || arg === 'ta');
 var el = document.getElementById('modal-input');
 var raw = String(picked ? ((el && el.value) || '') : (arg == null ? '' : arg)).trim();
@@ -65488,7 +65472,7 @@ if (target === 'my') w.myBalance += fen;
 else w.systemBalance += fen;
 walletSet(w); renderGiftBalances();
 coinLedgerAdd('ask', target === 'my' ? fen : 0, target === 'ta' ? fen : 0, '市集申请');
-toast('Mochi 已打款，' + LBL[target] + ' +¥' + fmtYuan(fen / 100));
+toast('小世界已打款，' + LBL[target] + ' +¥' + fmtYuan(fen / 100));
 doneAny = true;
 side = target === 'my' ? 'ta' : 'my';
 if (ctl) {
@@ -83501,7 +83485,7 @@ let msg;
 if (isFullscreen()) {
 msg = '已进入全屏模式，浏览器工具栏已隐藏。\n\niOS 顶部系统状态栏（时间/电量）由系统控制，任何网页都无法隐藏，这是所有 iPhone 网页的共同限制。';
 } else if (inIosStandalone) {
-msg = '已进入全屏模式。iOS 的系统状态栏（时间/电量）由系统控制，任何网页都无法隐藏，这是所有 iPhone 应用的共同限制。\n\n应用内的模拟状态栏（Mochi/时间/电量）已下移到系统状态栏正下方、两栏不重叠，内容顶满屏幕、屏幕利用更满。';
+msg = '已进入全屏模式。iOS 的系统状态栏（时间/电量）由系统控制，任何网页都无法隐藏，这是所有 iPhone 应用的共同限制。\n\n应用内的模拟状态栏（小世界/时间/电量）已下移到系统状态栏正下方、两栏不重叠，内容顶满屏幕、屏幕利用更满。';
 } else {
 msg = '当前浏览器未允许本页进入全屏，开关已回滚。\n\niPhone 上想真正隐藏浏览器栏，只有：\n· 【推荐】改用 Safari 打开本站 → 底部「分享」→「添加到主屏幕」→ 点桌面图标打开，即无浏览器栏的独立应用；'
 + (isEdgeIOS ? '\n· Edge 菜单「添加到主屏幕」只会创建快捷方式，打开后仍是带工具栏的网页（就是现在的状态），这条路拿不到全屏。' : '')
@@ -85236,7 +85220,7 @@ setTimeout(maybeShow, 300); // 留一点开屏退出动画缓冲
 }, 300);
 })();
 (function () {
-const W1 = 'Mochi字卡网站完全免费，作者只有小红书这一个账号：小红书@言序（1842523578）。如有出现任何收费情况，均为诈骗，注意防止被骗。';
+const W1 = '小世界网站完全免费，作者只有小红书这一个账号：小红书@言序（1842523578）。如有出现任何收费情况，均为诈骗，注意防止被骗。';
 const W2 = '二传、分享本站链接必须标注作者署名：小红书 @言序（1842523578），禁止删除或修改。严禁冒为自己制作、删除篡改署名，或以任何形式收费倒卖本站链接、安装包——本站完全免费，收费即诈骗。如果你是花钱买来的链接：你被骗了，请拒付退款并举报卖家。';
 function mkWatchBar(tag, title, text) {
 const b = document.createElement('div');
