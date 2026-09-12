@@ -8924,7 +8924,28 @@ transition-duration: .01ms !important;
 .applock-btns .al-primary:active { transform: scale(.98); }
 .applock-btns .al-ghost { border: 1px solid var(--card-border, rgba(0, 0, 0, .1)); background: var(--card-bg-97, #fff); color: var(--soft-ink, #555); }
 </style>
-<style>/* [功能精简] 已摸鱼卡移除后，剩下的今日情话卡占满整行 */.mini-row > .mini-card:only-child { flex:1 1 100%; grid-column:1 / -1; }</style></head>
+<style>/* [功能精简] 已摸鱼卡移除后，剩下的今日情话卡占满整行 */.mini-row > .mini-card:only-child { flex:1 1 100%; grid-column:1 / -1; }</style><style>
+/* [布局精简] 经期卡缩小，与「今天的心情」并排；今日备忘独占一行 */
+.mini-row.dp-row { align-items:stretch; }
+.mini-row.dp-row > .desk-period,
+.mini-row.dp-row > .mini-card { flex:1; min-width:0; height:104px; padding:12px; display:flex; flex-direction:column; justify-content:center; }
+.mini-row.dp-row > .desk-period .dpd-label { font-size:12px; }
+.mini-row.dp-row > .desk-period .dpd-days { font-size:30px; margin:4px 0; line-height:1.1; }
+.mini-row.dp-row > .desk-period .dpd-sub { font-size:11px; }
+.mini-row > .mini-card:only-child { flex:1 1 100%; }
+</style><style>
+/* [安全区修正] 诊断实测：独立应用模式下可视区 879px，而 .phone 被算成 926px，
+   超出的 47px 被 body 的 flex 居中上下平分 → 顶部钻进状态栏 23px、底部白带 23px。
+   这里改用动态视口高度（dvh=可视区），并把对齐改为顶部对齐兜底。 */
+html.ios-pwa-standalone:not(.ios-fs-active) body,
+html.tablet.ios-pwa-standalone:not(.ios-fs-active) body { align-items:flex-start; }
+html.ios-pwa-standalone:not(.ios-fs-active) .phone,
+html.tablet.ios-pwa-standalone:not(.ios-fs-active) .phone {
+  height:100dvh !important;
+  min-height:0 !important;
+  margin-top:0 !important;
+}
+</style></head>
 <body>
   <!-- 开屏加载动画 -->
   <!-- ===== 封面已移除（封面移除补丁）：以下仅为应用运行所需的空壳节点，不含任何显示内容 ===== -->
@@ -9090,19 +9111,29 @@ transition-duration: .01ms !important;
 <div class="mc-top">本周日常</div>
 <div class="week-days" id="week-days"></div>
 </div>
-<!-- 离周末还有几天（点击摸鱼 +1，可累计）
-     v3.15.x：标题与副题合并同一行（.we-top），整卡与首页打卡横幅同档高度 -->
-<div class="weekend-box glass" id="weekend-box" data-desk-widget="weekend" data-card-bg="weekend">
-<div class="we-left">
-<span class="we-top"><span class="we-days" id="weekend-days">离周末还有 0 天</span><span class="we-sub">距离周末 · 摸鱼倒计时</span></span>
-<span class="we-ta" id="weekend-ta-name"><span class="pair"><i>TA 摸鱼值</i><b id="weekend-ta">0</b></span><span class="pair"><i>TA 工作值</i><b id="weekend-work-ta">0</b></span></span>
-<span class="we-ta" id="weekend-mine-name"><span class="pair"><i>我 摸鱼值</i><b id="weekend-mine">0</b></span><span class="pair"><i>我 工作值</i><b id="weekend-work">0</b></span></span>
-</div>
-<button class="we-btn" id="weekend-fish" title="摸鱼 +1">摸鱼 +<b id="weekend-count">0</b></button>
-</div>
 
 <!-- 第二页功能：两排图标（第一排 音乐/聊天统计/提问记录/寻踪；第二排 花园/此间/同频(注入)/伸手(注入)；
      喝水已移至第三页 p3-grid（p2-features 注入）），整组移到摸鱼组件（周末倒计时）下面 -->
+<!-- [布局精简] 经期卡缩小，与「今天的心情」并排 -->
+<div class="mini-row dp-row" data-desk-widget="period-row">
+<div class="desk-period glass" data-desk-widget="desk-period" data-card-bg="desk-period">
+  <div class="dpd-inner">
+    <div class="dpd-label" id="dpd-label">经期</div>
+    <div class="dpd-days" id="dpd-days">—</div>
+    <div class="dpd-sub" id="dpd-sub">未记录</div>
+  </div>
+</div>
+<div class="mini-card glass mood-card" data-card-bg="mood">
+<div class="mc-top">今天的心情</div>
+<div class="mc-b" id="today-mood-text">点一下选心情</div>
+</div>
+</div>
+<div class="mini-row" data-desk-widget="memo-row">
+<div class="mini-card glass memo-card" data-card-bg="memo">
+<div class="mc-top">今日备忘</div>
+<div class="mc-b" id="memo-text" title="点击记录">点这里记一句话</div>
+</div>
+</div>
 <div class="app-grid p2-grid" data-app="p2" data-desk-widget="p2apps">
 <div class="app" data-app="music" data-desk-widget="app-music">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
@@ -9126,30 +9157,6 @@ transition-duration: .01ms !important;
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 012-2h12a2 2 0 012 2v16"/><path d="M4 21h16"/><path d="M10 21v-6h4v6"/></svg></div>
 <div class="app-name">此间</div>
 </div>
-</div>
-      </div><!-- /page-slide 第二页 -->
-
-      <!-- 第三页：经期记录等健康记录 -->
-      <div class="page-slide third">
-<div class="desk-period glass" data-desk-widget="desk-period" data-card-bg="desk-period">
-  <div class="dpd-inner">
-    <div class="dpd-label" id="dpd-label">经期</div>
-    <div class="dpd-days" id="dpd-days">—</div>
-    <div class="dpd-sub" id="dpd-sub">未记录</div>
-  </div>
-</div>
-<!-- v3.13.x：今日备忘 + 今天的心情（自第二页移入，放经期卡下方） -->
-<div class="mini-row" data-desk-widget="memo-row">
-<div class="mini-card glass memo-card" data-card-bg="memo">
-<div class="mc-top">今日备忘</div>
-<div class="mc-b" id="memo-text" title="点击记录">点这里记一句话</div>
-</div>
-<div class="mini-card glass mood-card" data-card-bg="mood">
-<div class="mc-top">今天的心情</div>
-<div class="mc-b" id="today-mood-text">点一下选心情</div>
-</div>
-</div>
-<div class="app-grid p3-grid" data-app="p3" data-desk-widget="p3apps">
 <div class="app" data-app="period" data-desk-widget="app-period">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2C12 3.2 6 9.2 6 14.2a6 6 0 0 0 12 0c0-5-6-11-6-11z"/><path d="M12 16.4c0 0-2.3-1.4-2.3-2.9a1.25 1.25 0 0 1 2.3-.9 1.25 1.25 0 0 1 2.3.9c0 1.5-2.3 2.9-2.3 2.9z"/></svg></div>
 <div class="app-name">经期记录</div>
@@ -9170,7 +9177,9 @@ transition-duration: .01ms !important;
 </div>
 <!-- 本页动态注入 喝水/吃什么/存钱罐/番茄钟（p2-features.js，喝水排在本页静态图标之后） -->
 </div>
-      </div><!-- /page-slide 第三页 -->
+      </div><!-- /page-slide 第二页 -->
+
+      <!-- 第三页：经期记录等健康记录 -->
       </div><!-- /desktop-pages -->
 
       <!-- 桌面小组件隐藏池：被移除/未添加的组件暂存于此（display:none）。
