@@ -88933,7 +88933,7 @@ lastHeal: his
   function open () {
     mask.classList.add('on');
     show(0);
-    hint.textContent = '点下面投掷';
+    hint.textContent = '点上面掷骰子';
   }
   function shut () {
     mask.classList.remove('on');
@@ -89019,7 +89019,7 @@ lastHeal: his
         rec.onend = function () {
           recing = false;
           micEl.classList.remove('on');
-          if (hint.textContent === '松手结束') hint.textContent = '点下面投掷';
+          if (hint.textContent === '松手结束') hint.textContent = '点上面掷骰子';
         };
         rec.start();
         /* 兜底：最多 10 秒自动收尾，避免某些浏览器 onend 不触发、按钮一直红着 */
@@ -89038,7 +89038,7 @@ lastHeal: his
       recing = false;
       try { if (rec) rec.stop(); } catch (x) {}
       micEl.classList.remove('on');
-      hint.textContent = '点下面投掷';
+      hint.textContent = '点上面掷骰子';
     }
 
     /* 按住说话：按下开始，松手立刻停 —— 不会一直开着麦克风 */
