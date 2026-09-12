@@ -88551,11 +88551,14 @@ lastHeal: his
   font-size:14px; font-family:inherit; cursor:pointer; }
 #dice-qwrap{ position:relative; }
 #dice-q{ padding:11px 46px 11px 12px; }
-#dice-mic{ position:absolute; right:7px; top:50%; transform:translateY(-50%);
-  width:34px; height:34px; border:0; border-radius:50%; background:#f2f2f2; cursor:pointer;
-  font-size:15px; line-height:1; padding:0; }
-#dice-mic.on{ background:#e02b2b; }
-#dice-mic.off{ opacity:.35; }
+#dice-mic{ position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  width:32px; height:32px; border:0; border-radius:50%; background:#f4f4f4; cursor:pointer;
+  padding:0; display:flex; align-items:center; justify-content:center;
+  color:#8a8a8a; transition:background .2s ease, color .2s ease, transform .2s ease; }
+#dice-mic svg{ width:17px; height:17px; display:block; }
+#dice-mic:active{ transform:translateY(-50%) scale(.94); }
+#dice-mic.on{ background:#e02b2b; color:#fff; }
+#dice-mic.off{ opacity:.4; }
 #dice-log-head{ display:flex; align-items:center; justify-content:space-between;
   margin-top:16px; padding-top:11px; border-top:1px solid #eee;
   font-size:11px; color:#aaa; letter-spacing:.12em; }
@@ -88574,7 +88577,7 @@ lastHeal: his
     <p id="dice-title">问个问题，投骰子</p>
     <div id="dice-qwrap">
       <input id="dice-q" type="text" maxlength="40" placeholder="想问什么？">
-      <button id="dice-mic" type="button" title="语音输入">🎤</button>
+      <button id="dice-mic" type="button" title="按住说话" aria-label="按住说话"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.6" width="6" height="10.8" rx="3"/><path d="M5.6 11.2a6.4 6.4 0 0012.8 0"/><path d="M12 17.6V21"/></svg></button>
     </div>
     <div id="dice-face"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div id="dice-hint">点下面投掷</div>
@@ -88697,34 +88700,77 @@ lastHeal: his
   /* ---------- 语音转文字 ----------
      iOS 的 Safari / WebKit 不支持网页语音识别，这里做能力检测：
      支持就用，不支持就提示改用键盘自带的麦克风键。 */
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var rec = null, recing = false;
+  /* iOS 的 Safari 会「暴露」这个接口但不工作（按了没反应、还不结束），
+     所以直接把 iOS 判为不支持，走键盘麦克风的提示。 */
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var SR = isIOS ? null : (window.SpeechRecognition || window.webkitSpeechRecognition);
+  var rec = null, recing = false, recTimer = null;
 
   if (micEl) {
     if (!SR) {
       micEl.classList.add('off');
       micEl.title = '当前浏览器不支持语音识别，请用键盘上的麦克风键';
     }
-    micEl.addEventListener('click', function (e) {
-      e.stopPropagation();
-      if (!SR) { hint.textContent = '这台设备不支持网页语音输入，请点输入框后用键盘上的🎤键'; return; }
-      if (recing) { try { rec.stop(); } catch (x) {} return; }
+
+    function startRec () {
+      if (!SR || recing) return;
+      recing = true;
+      micEl.classList.add('on');
+      hint.textContent = '松手结束';
       try {
         rec = new SR();
         rec.lang = 'zh-CN';
-        rec.interimResults = true;
-        rec.continuous = false;
-        rec.onstart = function () { recing = true; micEl.classList.add('on'); hint.textContent = '正在听…'; };
+        rec.interimResults = true;   /* 边说边出字 */
+        rec.continuous = false;      /* 说一句就结束，不一直开着 */
         rec.onresult = function (ev) {
           var s = '';
-          for (var i = ev.resultIndex; i < ev.results.length; i++) s += ev.results[i][0].transcript;
+          for (var i = 0; i < ev.results.length; i++) s += ev.results[i][0].transcript;
           if (qEl) qEl.value = s.slice(0, 40);
         };
-        rec.onerror = function () { hint.textContent = '没听清，再试一次'; };
-        rec.onend = function () { recing = false; micEl.classList.remove('on'); if (hint.textContent === '正在听…') hint.textContent = '点下面投掷'; };
+        rec.onerror = function (e) {
+          recing = false;
+          micEl.classList.remove('on');
+          hint.textContent = (e && e.error === 'not-allowed') ? '没有麦克风权限，请在浏览器里允许' : '没听清，再按住说一次';
+        };
+        rec.onend = function () {
+          recing = false;
+          micEl.classList.remove('on');
+          if (hint.textContent === '松手结束') hint.textContent = '点下面投掷';
+        };
         rec.start();
-      } catch (x) { hint.textContent = '语音启动失败'; }
+        /* 兜底：最多 10 秒自动收尾，避免某些浏览器 onend 不触发、按钮一直红着 */
+        clearTimeout(recTimer);
+        recTimer = setTimeout(stopRec, 10000);
+      } catch (x) {
+        recing = false;
+        micEl.classList.remove('on');
+        hint.textContent = '语音启动失败';
+      }
+    }
+
+    function stopRec () {
+      clearTimeout(recTimer);
+      if (!recing) return;
+      recing = false;
+      try { if (rec) rec.stop(); } catch (x) {}
+      micEl.classList.remove('on');
+      hint.textContent = '点下面投掷';
+    }
+
+    /* 按住说话：按下开始，松手立刻停 —— 不会一直开着麦克风 */
+    micEl.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!SR) { hint.textContent = '这台设备不支持网页语音输入，请点输入框后用键盘上的🎤键'; return; }
+      startRec();
     });
+    micEl.addEventListener('pointerup', stopRec);
+    micEl.addEventListener('pointerleave', stopRec);
+    micEl.addEventListener('pointercancel', stopRec);
+    /* 兜底：部分老浏览器只发 touch 事件 */
+    micEl.addEventListener('touchend', function (e) { e.preventDefault(); stopRec(); });
+    micEl.addEventListener('touchcancel', stopRec);
   }
 
   roll.addEventListener('click', doRoll);
