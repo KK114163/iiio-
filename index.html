@@ -24,6 +24,18 @@
     --ink-dim: rgba(255,255,255,.38);
     --edge:    rgba(255,255,255,.14);
     --slot:    #0b0b0b;                  /* 黑色输入框 */
+
+    /* 文字颜色：可在右下角封面设置里改 */
+    --title-color: #f6f6f6;              /* 霞与昼 */
+    --enter-color: #000000;              /* 进入小世界 */
+
+    /* 封面字体：inherit = 跟随「整体字体」 */
+    --title-font: inherit;
+    --enter-font: inherit;
+
+    /* 胶囊磨砂：RGB 三元组 + 透明度倍率，由右下角封面设置控制 */
+    --pod-tint: 255 255 255;
+    --pod-alpha: 1;
   }
 
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -79,10 +91,11 @@
     flex-direction:column;
     align-items:center;
 
+    /* 磨砂色与透明度由 --pod-tint / --pod-alpha 驱动（右下角封面设置可调） */
     background:linear-gradient(180deg,
-                rgba(255,255,255,.10),
-                rgba(255,255,255,.045) 46%,
-                rgba(255,255,255,.085));
+                rgb(var(--pod-tint) / calc(.10 * var(--pod-alpha))),
+                rgb(var(--pod-tint) / calc(.045 * var(--pod-alpha))) 46%,
+                rgb(var(--pod-tint) / calc(.085 * var(--pod-alpha))));
     border:1px solid var(--edge);
     /* 半磨砂：模糊度别拉满，圈内还能看出背景的色块和轮廓 */
     backdrop-filter:blur(14px) saturate(1.12);
@@ -132,11 +145,12 @@
 
   .title{
     margin:0;
+    font-family:var(--title-font);
     font-size:clamp(18px,5vw,21px);
     font-weight:400;
     letter-spacing:.22em;
     text-indent:.22em;
-    color:#f6f6f6;
+    color:var(--title-color);
     text-shadow:0 1px 12px rgba(0,0,0,.28);
   }
 
@@ -151,18 +165,51 @@
   }
 
   .enter{
+    /* 与圆环同款描边，但做成和密码框一样的长条胶囊，宽度贴合文字 */
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    height:46px;                            /* 与密码框同高 */
+    padding:0 20px 0 calc(20px + .34em);    /* 左内边距补掉字距的尾部空隙，视觉居中 */
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.22);
+    background:radial-gradient(circle at 50% 30%,
+                rgba(255,255,255,.10), rgba(255,255,255,.015) 72%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.26),
+               0 10px 26px rgba(0,0,0,.26);
+
+    font-family:var(--enter-font);
     font-size:clamp(15px,4.2vw,16px);
     letter-spacing:.34em;
-    text-indent:.34em;
-    color:rgba(255,255,255,.92);
+    color:var(--enter-color);
     user-select:none;
-    text-shadow:0 1px 12px rgba(0,0,0,.28);
-    transition:color .5s ease, text-shadow .5s ease;
+
+    /* 位置：大胶囊中线偏下 */
+    position:relative;
+    top:10%;
+
+    /* 未解锁时先不显示，输对密码后才淡入 */
+    opacity:0;
+    transform:translateY(8px) scale(.97);
+    pointer-events:none;
+    transition:opacity .5s ease,
+               transform .5s cubic-bezier(.2,.8,.2,1),
+               color .5s ease, text-shadow .5s ease,
+               border-color .55s ease, box-shadow .55s ease;
   }
   .pod.ready .enter{
-    color:#ffffff;
-    text-shadow:0 0 20px rgba(255,255,255,.45);
+    opacity:1;
+    transform:none;
+    pointer-events:auto;
+    /* 不再改文字颜色，只提亮描边和辉光，颜色交给 --enter-color */
+    border-color:rgba(255,255,255,.44);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.40),
+               0 0 34px rgba(255,255,255,.10),
+               0 10px 26px rgba(0,0,0,.28);
+    cursor:pointer;
   }
+  .pod.ready .enter:hover { transform:translateY(-1px); }
+  .pod.ready .enter:active{ transform:translateY(0); }
 
   /* ---------- 密码区（验证通过即收起并跳转） ---------- */
   .form{
@@ -183,6 +230,14 @@
     opacity:0;
     pointer-events:none;
   }
+  /* 解锁后：提示文字收起，中段铺满整卡，「进入小世界」相对卡片真正居中 */
+  .pod.ready .hint{ display:none; }
+  .pod.ready .mid{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .pod.ready .mid .enter{ pointer-events:auto; }
 
   .slot{
     width:100%;
@@ -364,6 +419,133 @@
     color:#1c1c1c;
   }
 
+  /* 导入字体专用：右侧留出删除位 */
+  .chip{ position:relative; }
+  .chip.has-x{ padding-right:27px; }
+  .chip-x{
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    width:15px;
+    height:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:rgba(0,0,0,.22);
+    font-size:12px;
+    line-height:1;
+    text-indent:0;
+    opacity:.55;
+  }
+  .chip-x:hover{ opacity:1; }
+  .chip.on .chip-x{ background:rgba(0,0,0,.16); }
+
+  .colors{ display:flex; flex-direction:column; gap:9px; }
+  .color-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:12px;
+    letter-spacing:.1em;
+    color:rgba(255,255,255,.84);
+    cursor:pointer;
+  }
+  .color-row input[type="color"]{
+    width:48px;
+    height:26px;
+    padding:0;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:8px;
+    background:transparent;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .color-row input[type="color"]::-webkit-color-swatch-wrapper{ padding:2px; }
+  .color-row input[type="color"]::-webkit-color-swatch{ border:0; border-radius:6px; }
+
+  .txt-in{
+    width:124px;
+    padding:5px 8px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:8px;
+    background:rgba(255,255,255,.06);
+    color:rgba(255,255,255,.90);
+    font-family:inherit;
+    font-size:12px;
+    letter-spacing:.04em;
+    text-align:center;
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+    transition:border-color .25s ease;
+  }
+  .txt-in::placeholder{ color:rgba(255,255,255,.32); }
+  .txt-in:focus{ border-color:rgba(255,255,255,.42); }
+
+  /* 开关 */
+  .sw{
+    width:38px;
+    height:22px;
+    margin:0;
+    border-radius:999px;
+    background:rgba(255,255,255,.14);
+    position:relative;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+    transition:background .25s ease;
+  }
+  .sw::after{
+    content:"";
+    position:absolute;
+    top:2px; left:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#fff;
+    transition:transform .25s ease;
+  }
+  .sw:checked{ background:rgba(255,255,255,.85); }
+  .sw:checked::after{ transform:translateX(16px); }
+
+  /* 透明度滑杆 */
+  .range-row{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-top:11px;
+    font-size:12px;
+    letter-spacing:.1em;
+    color:rgba(255,255,255,.84);
+  }
+  .range-row input[type="range"]{
+    flex:1;
+    min-width:0;
+    height:3px;
+    margin:0;
+    border-radius:999px;
+    background:rgba(255,255,255,.20);
+    -webkit-appearance:none;
+    appearance:none;
+    outline:none;
+  }
+  .range-row input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:15px; height:15px;
+    border-radius:50%;
+    background:#fff;
+    cursor:pointer;
+  }
+  .range-row b{
+    width:38px;
+    text-align:right;
+    font-weight:400;
+    color:rgba(255,255,255,.62);
+  }
+
   .note{
     margin:0;
     min-height:14px;
@@ -401,7 +583,7 @@
     </div>
 
     <div class="mid">
-      <span class="enter" id="enter">小世界</span>
+      <span class="enter" id="enter">进入小世界</span>
     </div>
 
     <div class="form" id="form">
@@ -431,8 +613,44 @@
     </div>
 
     <div class="block">
-      <p class="block-label">字体</p>
+      <p class="block-label">整体字体</p>
       <div class="chips" id="fonts"></div>
+      <div class="chips" style="margin-top:9px">
+        <button class="chip" id="font-import" type="button">＋ 导入字体</button>
+      </div>
+      <input type="file" id="font-file" accept=".ttf,.otf,.woff,.woff2" hidden>
+    </div>
+
+    <div class="block">
+      <p class="block-label">文字颜色</p>
+      <div class="colors">
+        <label class="color-row"><span>霞与昼</span><input type="color" id="col-title"></label>
+        <label class="color-row"><span>进入小世界</span><input type="color" id="col-enter"></label>
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="block-label">封面文字（想写什么就写什么）</p>
+      <div class="colors">
+        <label class="color-row"><span>标题</span>
+          <input type="text" class="txt-in" id="txt-title" maxlength="14" placeholder="霞与昼"></label>
+        <label class="color-row"><span>进入按钮</span>
+          <input type="text" class="txt-in" id="txt-enter" maxlength="14" placeholder="进入小世界"></label>
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="block-label">胶囊磨砂</p>
+      <div class="colors">
+        <label class="color-row"><span>磨砂颜色</span><input type="color" id="col-pod"></label>
+        <label class="color-row"><span>跟随背景</span>
+          <input type="checkbox" id="pod-auto" class="sw"></label>
+      </div>
+      <label class="range-row">
+        <span>透明度</span>
+        <input type="range" id="pod-alpha" min="0" max="300" step="5" value="100">
+        <b id="pod-alpha-val">100%</b>
+      </label>
     </div>
 
     <p class="note" id="note"></p>
@@ -457,7 +675,11 @@
     { key:'kai', name:'楷体',
       stack:'"Kaiti SC","KaiTi","STKaiti",serif' },
     { key:'yuan', name:'圆体',
-      stack:'"Yuanti SC","YouYuan","Microsoft YaHei",sans-serif' }
+      stack:'"Yuanti SC","YouYuan","Microsoft YaHei",sans-serif' },
+    { key:'hei', name:'黑体',
+      stack:'"Heiti SC","SimHei","Microsoft YaHei",sans-serif' },
+    { key:'fang', name:'仿宋',
+      stack:'"FangSong","STFangsong","FangSong_GB2312",serif' }
   ];
 
   var bg      = document.getElementById('bg');
@@ -466,6 +688,7 @@
   var confirm = document.getElementById('confirm');
   var hint    = document.getElementById('hint');
   var reset   = document.getElementById('reset');
+  var enter   = document.getElementById('enter');
 
   var dot   = document.getElementById('dot');
   var sheet = document.getElementById('sheet');
@@ -474,6 +697,21 @@
   var fonts = document.getElementById('fonts');
   var noteEl= document.getElementById('note');
   var file  = document.getElementById('file');
+  var colTitle = document.getElementById('col-title');
+  var colEnter = document.getElementById('col-enter');
+  var txtTitle = document.getElementById('txt-title');
+  var txtEnter = document.getElementById('txt-enter');
+  var colPod   = document.getElementById('col-pod');
+  var elPodAuto     = document.getElementById('pod-auto');
+  var elPodAlpha    = document.getElementById('pod-alpha');
+  var elPodAlphaVal = document.getElementById('pod-alpha-val');
+  var titleEl  = document.querySelector('.title');
+  var fontImport = document.getElementById('font-import');
+  var fontFile   = document.getElementById('font-file');
+
+  /* 页面写死的默认文案，作为输入框留空时的兜底 */
+  var DEF_TITLE = titleEl ? titleEl.textContent : '霞与昼';
+  var DEF_ENTER = enter ? enter.textContent : '进入小世界';
 
   var done      = false;
   var autoTimer = null;
@@ -482,7 +720,9 @@
   var noteTimer = null;
 
   /* ================= 封面设置 ================= */
-  var COVER = { font:'default', bg:'' };
+  var COVER = { font:'default', bg:'', titleColor:'#f6f6f6', enterColor:'#000000',
+                titleText:'', enterText:'',                       /* '' = 用页面默认文案 */
+                podColor:'#ffffff', podAlpha:1, podAuto:true };
 
   function loadCover () {
     try {
@@ -490,6 +730,13 @@
       if (o && typeof o === 'object') {
         if (typeof o.font === 'string') COVER.font = o.font;
         if (typeof o.bg   === 'string') COVER.bg   = o.bg;
+        if (typeof o.titleColor === 'string') COVER.titleColor = o.titleColor;
+        if (typeof o.enterColor === 'string') COVER.enterColor = o.enterColor;
+        if (typeof o.titleText === 'string') COVER.titleText = o.titleText;
+        if (typeof o.enterText === 'string') COVER.enterText = o.enterText;
+        if (typeof o.podColor === 'string') COVER.podColor = o.podColor;
+        if (typeof o.podAlpha === 'number') COVER.podAlpha = o.podAlpha;
+        if (typeof o.podAuto  === 'boolean') COVER.podAuto = o.podAuto;
       }
     } catch (e) {}
   }
@@ -501,12 +748,34 @@
 
   function stackOf (key) {
     for (var i = 0; i < FONTS.length; i++) if (FONTS[i].key === key) return FONTS[i].stack;
+    for (var j = 0; j < USERFONTS.length; j++) if (USERFONTS[j].key === key) return USERFONTS[j].stack;
     return FONTS[0].stack;
   }
 
   function applyCover () {
     /* 字体 */
     document.documentElement.style.setProperty('--font', stackOf(COVER.font));
+
+    /* 文字颜色 */
+    document.documentElement.style.setProperty('--title-color', COVER.titleColor);
+    document.documentElement.style.setProperty('--enter-color', COVER.enterColor);
+    if (colTitle && colTitle.value !== COVER.titleColor) colTitle.value = COVER.titleColor;
+    if (colEnter && colEnter.value !== COVER.enterColor) colEnter.value = COVER.enterColor;
+
+    /* 封面文字（留空 = 用页面默认文案） */
+    if (titleEl) titleEl.textContent = COVER.titleText || DEF_TITLE;
+    if (enter)   enter.textContent   = COVER.enterText  || DEF_ENTER;
+    if (txtTitle && txtTitle.value !== COVER.titleText) txtTitle.value = COVER.titleText;
+    if (txtEnter && txtEnter.value !== COVER.enterText) txtEnter.value = COVER.enterText;
+
+    /* 胶囊磨砂：颜色 + 透明度 */
+    document.documentElement.style.setProperty('--pod-alpha', String(COVER.podAlpha));
+    applyPodTint();
+    if (colPod && colPod.value !== COVER.podColor) colPod.value = COVER.podColor;
+    if (elPodAuto) elPodAuto.checked = !!COVER.podAuto;
+    var pct = Math.round(COVER.podAlpha * 100);
+    if (elPodAlpha)    elPodAlpha.value = String(pct);
+    if (elPodAlphaVal) elPodAlphaVal.textContent = pct + '%';
 
     /* 背景 */
     if (COVER.bg) {
@@ -525,12 +794,16 @@
     clear.classList.toggle('on', !COVER.bg);
   }
 
-  /* 生成字体选项 */
-  (function buildFonts () {
-    FONTS.forEach(function (f) {
+  /* 用户导入的字体（存在 IndexedDB；localStorage 装不下几 MB 的字体文件） */
+  var USERFONTS = [];
+
+  function renderFonts () {
+    if (!fonts) return;
+    fonts.innerHTML = '';
+    FONTS.concat(USERFONTS).forEach(function (f) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'chip';
+      b.className = 'chip' + (f.user ? ' has-x' : '');
       b.textContent = f.name;
       b.setAttribute('data-key', f.key);
       b.style.fontFamily = f.stack;          /* 直接用该字体显示，所见即所得 */
@@ -540,9 +813,21 @@
         applyCover();
         saveCover();
       });
+      if (f.user) {
+        var x = document.createElement('span');
+        x.className = 'chip-x';
+        x.textContent = '×';
+        x.title = '删除这个字体';
+        x.addEventListener('click', function (e) {
+          e.stopPropagation();
+          removeUserFont(f.key);
+        });
+        b.appendChild(x);
+      }
       fonts.appendChild(b);
     });
-  })();
+    applyCover();                            /* 同步选中态 */
+  }
 
   function note (msg) {
     noteEl.textContent = msg;
@@ -588,6 +873,107 @@
     saveCover();
     note('已恢复默认背景');
   });
+
+  /* 文字颜色：拖动时实时预览，松手才写入存储（避免每次都写大图 base64） */
+  function bindColor (el, key) {
+    if (!el) return;
+    el.addEventListener('input', function (e) {
+      e.stopPropagation();
+      COVER[key] = el.value;
+      applyCover();
+    });
+    el.addEventListener('change', function () { saveCover(); });
+    el.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+  bindColor(colTitle, 'titleColor');
+  bindColor(colEnter, 'enterColor');
+
+  /* 改封面文字：边打字边预览，失焦才写入存储 */
+  function bindText (el, key) {
+    if (!el) return;
+    el.addEventListener('click', function (e) { e.stopPropagation(); });
+    el.addEventListener('input', function () {
+      COVER[key] = el.value.trim();
+      applyCover();
+    });
+    el.addEventListener('change', function () { saveCover(); });
+  }
+  bindText(txtTitle, 'titleText');
+  bindText(txtEnter, 'enterText');
+
+  /* 磨砂颜色 */
+  if (colPod) {
+    colPod.addEventListener('click', function (e) { e.stopPropagation(); });
+    colPod.addEventListener('input', function (e) {
+      e.stopPropagation();
+      COVER.podColor = colPod.value;
+      COVER.podAuto = false;              /* 手动选色即退出跟随 */
+      applyCover();
+    });
+    colPod.addEventListener('change', function () { saveCover(); });
+  }
+
+  /* 跟随背景 */
+  if (elPodAuto) {
+    elPodAuto.addEventListener('click', function (e) { e.stopPropagation(); });
+    elPodAuto.addEventListener('change', function () {
+      COVER.podAuto = elPodAuto.checked;
+      applyCover();
+      saveCover();
+      note(COVER.podAuto ? '磨砂色跟随背景' : '磨砂色改为手动');
+    });
+  }
+
+  /* 透明度滑杆 */
+  if (elPodAlpha) {
+    elPodAlpha.addEventListener('click', function (e) { e.stopPropagation(); });
+    elPodAlpha.addEventListener('input', function (e) {
+      e.stopPropagation();
+      COVER.podAlpha = Number(elPodAlpha.value) / 100;
+      document.documentElement.style.setProperty('--pod-alpha', String(COVER.podAlpha));
+      if (elPodAlphaVal) elPodAlphaVal.textContent = elPodAlpha.value + '%';
+    });
+    elPodAlpha.addEventListener('change', function () { saveCover(); });
+  }
+
+  /* ---------- 磨砂色计算 ---------- */
+  function setTint (rgb) {
+    document.documentElement.style.setProperty('--pod-tint', rgb.join(' '));
+  }
+  function hexToRgb (h) {
+    var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(String(h || ''));
+    return m ? [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)] : [255,255,255];
+  }
+  function lightenToward (rgb, k) {   /* k = 向白色混多少 */
+    return rgb.map(function (v) { return Math.round(v + (255 - v) * k); });
+  }
+  function avgColor (dataUrl, cb) {   /* 取背景图平均色（缩到 1×1 像素） */
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var c = document.createElement('canvas');
+        c.width = 1; c.height = 1;
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, 1, 1);
+        var d = ctx.getImageData(0, 0, 1, 1).data;
+        cb([d[0], d[1], d[2]]);
+      } catch (e) { cb(null); }
+    };
+    img.onerror = function () { cb(null); };
+    img.src = dataUrl;
+  }
+  /* 自动模式：取背景均色后向白色提亮七成 —— 保留背景色调，同时维持磨砂的透亮感 */
+  function applyPodTint () {
+    if (!COVER.podAuto) { setTint(hexToRgb(COVER.podColor)); return; }
+    if (COVER.bg) {
+      avgColor(COVER.bg, function (rgb) {
+        setTint(lightenToward(rgb || hexToRgb(COVER.podColor), 0.72));
+      });
+    } else {
+      setTint(lightenToward(hexToRgb(getComputedStyle(document.documentElement)
+              .getPropertyValue('--bg').trim() || '#292929'), 0.72));
+    }
+  }
 
   file.addEventListener('change', function () {
     var f = file.files && file.files[0];
@@ -640,6 +1026,13 @@
   pod.addEventListener('click', function () {
     if (done) return;
     slot.focus();                   /* 轻触胶囊任意处 → 聚焦密码框 */
+  });
+
+  /* 点「进入小世界」才跳转（不再自动跳，留时间用右下角封面设置） */
+  enter.addEventListener('click', function (e) {
+    if (!done) return;              /* 未解锁时交给胶囊处理 */
+    e.stopPropagation();
+    go();
   });
 
   slot.addEventListener('input', function () {
@@ -695,14 +1088,14 @@
     go();
   }
 
-  /* 免密进入（留一小段时间可点「重设密码记忆」） */
-  function autoEnter () {
+  /* 3 天内免密：直接显示为已解锁，但**不自动跳转**——
+     改为点「进入小世界」才走，否则来不及用右下角的封面设置。 */
+  function showUnlocked () {
     done = true;
     pod.classList.add('ready');
     slot.disabled = true;
     reset.hidden = !rememberFresh();
-    setHint('3 天内免密码 · 正在进入…', false);
-    autoTimer = setTimeout(go, AUTO_WAIT);
+    setHint('3 天内免密码 · 轻触「进入小世界」', false);
   }
 
   function fail () {
@@ -736,10 +1129,123 @@
     window.location.href = TARGET;
   }
 
+  /* ================= 导入字体（IndexedDB 存储） ================= */
+  var FDB_NAME = 'xy-cover-fonts';
+
+  function fdb () {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open(FDB_NAME, 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('f'); };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror   = function () { rej(r.error); };
+    });
+  }
+  function fdbAll () {
+    return fdb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var t = db.transaction('f', 'readonly');
+        var s = t.objectStore('f');
+        var kq = s.getAllKeys(), vq = s.getAll();
+        t.oncomplete = function () { res({ keys: kq.result || [], vals: vq.result || [] }); };
+        t.onerror = function () { rej(t.error); };
+      });
+    });
+  }
+  function fdbPut (k, v) {
+    return fdb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var t = db.transaction('f', 'readwrite');
+        t.objectStore('f').put(v, k);
+        t.oncomplete = res;
+        t.onerror = function () { rej(t.error); };
+      });
+    });
+  }
+  function fdbDel (k) {
+    return fdb().then(function (db) {
+      return new Promise(function (res) {
+        var t = db.transaction('f', 'readwrite');
+        t.objectStore('f').delete(k);
+        t.oncomplete = res;
+        t.onerror = res;
+      });
+    });
+  }
+
+  /* 把字体二进制注册成浏览器可用的字体族 */
+  function registerFont (key, buf) {
+    if (!window.FontFace) return Promise.reject(new Error('no FontFace'));
+    var family = 'uf-' + key;
+    var ff = new FontFace(family, buf);
+    return ff.load().then(function (f) { document.fonts.add(f); return family; });
+  }
+
+  function loadUserFonts () {
+    return fdbAll().then(function (d) {
+      var jobs = d.keys.map(function (k, i) {
+        var rec = d.vals[i];
+        if (!rec || !rec.buf) return Promise.resolve();
+        return registerFont(k, rec.buf).then(function (family) {
+          USERFONTS.push({
+            key: k, user: true,
+            name: rec.name || '导入',
+            family: family,
+            stack: '"' + family + '", sans-serif'
+          });
+        }).catch(function () {});
+      });
+      return Promise.all(jobs);
+    }).then(renderFonts, renderFonts);
+  }
+
+  function removeUserFont (key) {
+    fdbDel(key).then(function () {
+      USERFONTS = USERFONTS.filter(function (f) { return f.key !== key; });
+      if (COVER.font === key) { COVER.font = 'default'; saveCover(); }
+      renderFonts();
+      note('字体已删除');
+    });
+  }
+
+  if (fontImport) {
+    fontImport.addEventListener('click', function (e) {
+      e.stopPropagation();
+      fontFile.click();
+    });
+  }
+  if (fontFile) {
+    fontFile.addEventListener('change', function () {
+      var f = fontFile.files && fontFile.files[0];
+      fontFile.value = '';
+      if (!f) return;
+      if (f.size > 30 * 1024 * 1024) { note('字体文件过大（超过 30MB）'); return; }
+
+      var key  = 'u' + (f.name + '_' + f.size).replace(/[^0-9a-zA-Z]/g, '').slice(-24);
+      var name = f.name.replace(/\.[^.]+$/, '').slice(0, 6);
+      var fr = new FileReader();
+      fr.onload = function () {
+        var buf = fr.result;
+        registerFont(key, buf)
+          .then(function () { return fdbPut(key, { buf: buf, name: name }); })
+          .then(loadUserFonts)
+          .then(function () {
+            COVER.font = key;
+            applyCover();
+            saveCover();
+            note('字体「' + name + '」已导入');
+          })
+          .catch(function () { note('导入失败：这个字体文件可能不被支持'); });
+      };
+      fr.onerror = function () { note('文件读取失败'); };
+      fr.readAsArrayBuffer(f);
+    });
+  }
+
   /* ================= 启动 ================= */
   loadCover();
   applyCover();
-  if (rememberFresh()) autoEnter();
+  loadUserFonts();          /* 异步恢复已导入的字体，完成后会重绘选项 */
+  if (rememberFresh()) showUnlocked();
 </script>
 
 </body>
