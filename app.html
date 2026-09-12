@@ -8950,6 +8950,23 @@ transition-duration: .01ms !important;
 .mini-row.dp-row > .desk-period .dpd-days { font-size:30px; margin:4px 0; line-height:1.1; }
 .mini-row.dp-row > .desk-period .dpd-sub { font-size:11px; }
 .mini-row > .mini-card:only-child { flex:1 1 100%; }
+/* 经期卡独占一行时铺满整宽 */
+.mini-row > .desk-period:only-child { flex:1 1 100%; }
+/* 经期卡压扁到和「本周日常」同高（92px），细窄一些 */
+.mini-row[data-desk-widget="period-row"] > .desk-period {
+  flex:1 1 100%;
+  height:92px;
+  padding:10px 16px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.mini-row[data-desk-widget="period-row"] > .desk-period .dpd-label { font-size:12px; }
+.mini-row[data-desk-widget="period-row"] > .desk-period .dpd-days {
+  font-size:26px; margin:2px 0; line-height:1.1;
+}
+.mini-row[data-desk-widget="period-row"] > .desk-period .dpd-sub { font-size:11px; }
 </style><style>
 /* [安全区修正] 诊断实测：独立应用模式下可视区 879px，而 .phone 被算成 926px，
    超出的 47px 被 body 的 flex 居中上下平分 → 顶部钻进状态栏 23px、底部白带 23px。
@@ -8961,6 +8978,14 @@ html.tablet.ios-pwa-standalone:not(.ios-fs-active) .phone {
   height:100dvh !important;
   min-height:0 !important;
   margin-top:0 !important;
+}
+
+/* [安全区修正 v2] 应用自己模拟的状态栏（「小世界」+ 时间 + 信号图标）
+   画在了屏幕最顶上，和 iOS 系统状态栏重叠。
+   这里把它整体下移一个 safe-area-inset-top（本机 47px），落到系统栏下方。 */
+html.ios-pwa-standalone .statusbar,
+html.tablet.ios-pwa-standalone .statusbar {
+  padding-top: env(safe-area-inset-top, 0px) !important;
 }
 </style></head>
 <body>
@@ -9131,24 +9156,24 @@ html.tablet.ios-pwa-standalone:not(.ios-fs-active) .phone {
 
 <!-- 第二页功能：两排图标（第一排 音乐/聊天统计/提问记录/寻踪；第二排 花园/此间/同频(注入)/伸手(注入)；
      喝水已移至第三页 p3-grid（p2-features 注入）），整组移到摸鱼组件（周末倒计时）下面 -->
-<!-- [布局精简] 经期卡缩小，与「今天的心情」并排 -->
-<div class="mini-row dp-row" data-desk-widget="period-row">
-<div class="desk-period glass" data-desk-widget="desk-period" data-card-bg="desk-period">
-  <div class="dpd-inner">
-    <div class="dpd-label" id="dpd-label">经期</div>
-    <div class="dpd-days" id="dpd-days">—</div>
-    <div class="dpd-sub" id="dpd-sub">未记录</div>
-  </div>
+<!-- [布局精简] 今日备忘 + 今天的心情 并排；经期卡独占一行（与备忘录对调） -->
+<div class="mini-row dp-row" data-desk-widget="memo-row">
+<div class="mini-card glass memo-card" data-card-bg="memo">
+<div class="mc-top">今日备忘</div>
+<div class="mc-b" id="memo-text" title="点击记录">点这里记一句话</div>
 </div>
 <div class="mini-card glass mood-card" data-card-bg="mood">
 <div class="mc-top">今天的心情</div>
 <div class="mc-b" id="today-mood-text">点一下选心情</div>
 </div>
 </div>
-<div class="mini-row" data-desk-widget="memo-row">
-<div class="mini-card glass memo-card" data-card-bg="memo">
-<div class="mc-top">今日备忘</div>
-<div class="mc-b" id="memo-text" title="点击记录">点这里记一句话</div>
+<div class="mini-row" data-desk-widget="period-row">
+<div class="desk-period glass" data-desk-widget="desk-period" data-card-bg="desk-period">
+  <div class="dpd-inner">
+    <div class="dpd-label" id="dpd-label">经期</div>
+    <div class="dpd-days" id="dpd-days">—</div>
+    <div class="dpd-sub" id="dpd-sub">未记录</div>
+  </div>
 </div>
 </div>
 <div class="app-grid p2-grid" data-app="p2" data-desk-widget="p2apps">
@@ -9191,6 +9216,10 @@ html.tablet.ios-pwa-standalone:not(.ios-fs-active) .phone {
 <div class="app" data-app="room" data-desk-widget="app-room">
 <div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11L12 4l8.5 7"/><path d="M5.8 9.6V20h12.4V9.6"/><path d="M10 20v-5.4h4V20"/></svg></div>
 <div class="app-name">房间</div>
+</div>
+<div class="app" id="dice-app" data-desk-widget="app-dice">
+<div class="app-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.35" fill="#111111" stroke="none"/><circle cx="15.5" cy="15.5" r="1.35" fill="#111111" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="#111111" stroke="none"/></svg></div>
+<div class="app-name">骰子</div>
 </div>
 <!-- 本页动态注入 喝水/吃什么/存钱罐/番茄钟（p2-features.js，喝水排在本页静态图标之后） -->
 </div>
@@ -88412,6 +88441,282 @@ lastHeal: his
     var btn = document.getElementById("splash-enter");
     if (btn) { try { btn.click(); } catch (e) {} }
   }, 250);
+})();
+</script>
+<script>
+/* [桌面两页补丁 v2]
+   上一版只清了 localStorage 所以没生效：布局存档在 IndexedDB 里也有一份，
+   而应用读取时 IDB 优先（xyStore 先查内存缓存，缓存由 IDB 回填）。
+   本版改用应用自己的接口做双写：desk-layout 双删、desk-page-count 双写为 2。
+   安全措施：
+     1. 只碰名字里含 desk-layout / desk-page-count 的键，不触碰聊天记录等任何数据
+     2. URL 带 ?deskfix=1 时不再刷新，避免死循环
+     3. 只执行一次，执行后打标记 */
+(function () {
+  var FLAG = 'xy-patch-desk3-v1';
+  try {
+    if (localStorage.getItem(FLAG)) return;
+    if (location.search.indexOf('deskfix=2') > -1) return;
+    localStorage.setItem(FLAG, '1');
+  } catch (e) { return; }
+
+  var jobs = {};
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k) continue;
+      if (k.indexOf('desk-layout')     > -1) jobs[k] = 'del';
+      if (k.indexOf('desk-page-count') > -1) jobs[k] = 'two';
+    }
+  } catch (e) {}
+
+  var hasPage = false;
+  for (var a in jobs) if (jobs[a] === 'two') hasPage = true;
+  if (!hasPage) {
+    var P = 'xy-home-v2:default';
+    try { if (window.activePrefix) P = window.activePrefix(); } catch (e) {}
+    jobs['default:desk-page-count'] = 'two';
+    jobs['xy-home-v2:default:desk-page-count'] = 'two';
+    jobs[P + ':desk-page-count'] = 'two';
+  }
+
+  var waits = [];
+  for (var key in jobs) {
+    try {
+      if (jobs[key] === 'del') {
+        localStorage.removeItem(key);
+        if (window.idbDelete) waits.push(Promise.resolve(window.idbDelete(key))['catch'](function () {}));
+      } else {
+        localStorage.setItem(key, '2');
+        if (window.idbSet)   waits.push(Promise.resolve(window.idbSet(key, '2'))['catch'](function () {}));
+        if (window.xyStore)  waits.push(Promise.resolve(window.xyStore('xy-home-v2').set('desk-page-count', '2'))['catch'](function () {}));
+      }
+    } catch (e3) {}
+  }
+
+  /* 关键：IDB 写入是异步的，必须等它落盘再刷新，否则事务会被中断 */
+  var done = false;
+  function go () {
+    if (done) return;
+    done = true;
+    try { location.replace(location.pathname + '?deskfix=2' + location.hash); } catch (e4) {}
+  }
+  Promise.all(waits).then(go, go);
+  setTimeout(go, 2000);   /* 兜底：IDB 万一卡住也要走 */
+})();
+</script>
+<!-- [骰子] 独立浮层：不注册成应用的页面，避免影响桌面结构 -->
+<style>
+#dice-mask{ position:fixed; inset:0; z-index:99999; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.45); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+#dice-mask.on{ display:flex; }
+#dice-card{ width:min(320px,86vw); padding:22px 20px 18px; border-radius:22px; background:#fff; color:#111;
+  box-shadow:0 20px 60px rgba(0,0,0,.35); text-align:center;
+  font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif; }
+#dice-title{ font-size:13px; color:#888; letter-spacing:.1em; margin:0 0 12px; }
+#dice-q{ width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid #e0e0e0; border-radius:12px;
+  font-size:14px; text-align:center; outline:none; font-family:inherit; color:#111; background:#fff; }
+#dice-q:focus{ border-color:#999; }
+#dice-face{ width:104px; height:104px; margin:20px auto 8px; padding:11px; box-sizing:border-box;
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:7px;
+  border:2.5px solid #111; border-radius:20px; background:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.10); }
+#dice-face i{ border-radius:50%; background:transparent; }
+#dice-face i.on{ background:#111; }
+#dice-face.red{ border-color:#e02b2b; }
+#dice-face.red i.on{ background:#e02b2b; }
+#dice-hint{ font-size:11px; color:#aaa; letter-spacing:.15em; min-height:1em; }
+#dice-btns{ display:flex; gap:10px; margin-top:18px; }
+#dice-roll{ flex:1; height:46px; border:0; border-radius:999px; background:#111; color:#fff;
+  font-size:15px; letter-spacing:.2em; font-family:inherit; cursor:pointer; }
+#dice-roll:active{ transform:scale(.98); }
+#dice-close{ width:88px; height:46px; border:0; border-radius:999px; background:#eee; color:#555;
+  font-size:14px; font-family:inherit; cursor:pointer; }
+#dice-qwrap{ position:relative; }
+#dice-q{ padding:11px 46px 11px 12px; }
+#dice-mic{ position:absolute; right:7px; top:50%; transform:translateY(-50%);
+  width:34px; height:34px; border:0; border-radius:50%; background:#f2f2f2; cursor:pointer;
+  font-size:15px; line-height:1; padding:0; }
+#dice-mic.on{ background:#e02b2b; }
+#dice-mic.off{ opacity:.35; }
+#dice-log-head{ display:flex; align-items:center; justify-content:space-between;
+  margin-top:16px; padding-top:11px; border-top:1px solid #eee;
+  font-size:11px; color:#aaa; letter-spacing:.12em; }
+#dice-clear{ border:0; background:none; color:#bbb; font-size:11px; font-family:inherit; cursor:pointer; padding:2px 4px; }
+#dice-log{ max-height:132px; overflow-y:auto; text-align:left; margin-top:4px; }
+#dice-log .row{ display:flex; align-items:baseline; gap:8px; padding:5px 2px;
+  font-size:12px; color:#777; border-bottom:1px solid #f6f6f6; }
+#dice-log .row b{ font-size:15px; font-weight:700; color:#111; min-width:15px; }
+#dice-log .row b.r{ color:#e02b2b; }
+#dice-log .row span{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#dice-log .row i{ font-style:normal; color:#c4c4c4; font-size:10px; }
+#dice-log .empty{ font-size:11px; color:#c8c8c8; padding:6px 2px; }
+</style>
+<div id="dice-mask">
+  <div id="dice-card">
+    <p id="dice-title">问个问题，投骰子</p>
+    <div id="dice-qwrap">
+      <input id="dice-q" type="text" maxlength="40" placeholder="想问什么？">
+      <button id="dice-mic" type="button" title="语音输入">🎤</button>
+    </div>
+    <div id="dice-face"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="dice-hint">点下面投掷</div>
+    <div id="dice-btns">
+      <button id="dice-roll" type="button">投 骰 子</button>
+      <button id="dice-close" type="button">关闭</button>
+    </div>
+    <div id="dice-log-head">
+      <span>投骰记录</span>
+      <button id="dice-clear" type="button">清空</button>
+    </div>
+    <div id="dice-log"></div>
+  </div>
+</div>
+<script>
+(function () {
+  var mask  = document.getElementById('dice-mask');
+  var face  = document.getElementById('dice-face');
+  var hint  = document.getElementById('dice-hint');
+  var roll  = document.getElementById('dice-roll');
+  var shutB = document.getElementById('dice-close');
+  var qEl   = document.getElementById('dice-q');
+  var logEl = document.getElementById('dice-log');
+  var micEl = document.getElementById('dice-mic');
+  var clrEl = document.getElementById('dice-clear');
+  var timer = null;
+
+  /* ---------- 投骰记录（存本机） ---------- */
+  var LOG_KEY = 'xia-yu-zhou.dice-log';
+  var MAX_LOG = 50;
+
+  function readLog () {
+    try { var a = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+  }
+  function writeLog (a) {
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(a.slice(0, MAX_LOG))); } catch (e) {}
+  }
+  function renderLog () {
+    if (!logEl) return;
+    var a = readLog();
+    if (!a.length) { logEl.innerHTML = '<div class="empty">还没有记录</div>'; return; }
+    var html = '';
+    for (var i = 0; i < a.length; i++) {
+      var e = a[i];
+      var q = String(e.q || '').replace(/[<>&]/g, '');
+      html += '<div class="row">' +
+                '<b class="' + (e.v === 1 ? 'r' : '') + '">' + e.v + '</b>' +
+                '<span>' + (q || '（没写问题）') + '</span>' +
+                '<i>' + (e.t || '') + '</i>' +
+              '</div>';
+    }
+    logEl.innerHTML = html;
+  }
+  function pushLog (v, q) {
+    var a = readLog();
+    var d = new Date();
+    var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    a.unshift({ v: v, q: q, t: (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) });
+    writeLog(a);
+    renderLog();
+  }
+  if (clrEl) clrEl.addEventListener('click', function () {
+    try { localStorage.removeItem(LOG_KEY); } catch (e) {}
+    renderLog();
+  });
+
+  /* 九宫格点位：0-8 依次为 左上→右下 */
+  var DOTS = {
+    1: [4],
+    2: [0, 8],
+    3: [0, 4, 8],
+    4: [0, 2, 6, 8],
+    5: [0, 2, 4, 6, 8],
+    6: [0, 2, 3, 5, 6, 8]
+  };
+  var cells = face.querySelectorAll('i');
+
+  function open () {
+    mask.classList.add('on');
+    show(0);
+    hint.textContent = '点下面投掷';
+  }
+  function shut () {
+    mask.classList.remove('on');
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+  function show (v) {
+    var on = DOTS[v] || [];
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].className = (on.indexOf(i) > -1) ? 'on' : '';
+    }
+    face.className = (v === 1) ? 'red' : '';
+  }
+  function doRoll () {
+    if (timer) return;
+    var n = 0;
+    hint.textContent = '投掷中…';
+    timer = setInterval(function () {
+      show(1 + Math.floor(Math.random() * 6));
+      if (++n >= 12) {
+        clearInterval(timer); timer = null;
+        var f = 1 + Math.floor(Math.random() * 6);
+        show(f);
+        hint.textContent = (f === 1) ? '1 点 · 红色的那种' : (f + ' 点');
+        pushLog(f, qEl ? qEl.value.trim() : '');
+      }
+    }, 70);
+  }
+
+  /* 捕获阶段拦截，避免触发应用自己的图标处理 */
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    while (t && t !== document) {
+      if (t.id === 'dice-app') { e.stopPropagation(); e.preventDefault(); open(); return; }
+      t = t.parentNode;
+    }
+  }, true);
+
+  /* ---------- 语音转文字 ----------
+     iOS 的 Safari / WebKit 不支持网页语音识别，这里做能力检测：
+     支持就用，不支持就提示改用键盘自带的麦克风键。 */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, recing = false;
+
+  if (micEl) {
+    if (!SR) {
+      micEl.classList.add('off');
+      micEl.title = '当前浏览器不支持语音识别，请用键盘上的麦克风键';
+    }
+    micEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (!SR) { hint.textContent = '这台设备不支持网页语音输入，请点输入框后用键盘上的🎤键'; return; }
+      if (recing) { try { rec.stop(); } catch (x) {} return; }
+      try {
+        rec = new SR();
+        rec.lang = 'zh-CN';
+        rec.interimResults = true;
+        rec.continuous = false;
+        rec.onstart = function () { recing = true; micEl.classList.add('on'); hint.textContent = '正在听…'; };
+        rec.onresult = function (ev) {
+          var s = '';
+          for (var i = ev.resultIndex; i < ev.results.length; i++) s += ev.results[i][0].transcript;
+          if (qEl) qEl.value = s.slice(0, 40);
+        };
+        rec.onerror = function () { hint.textContent = '没听清，再试一次'; };
+        rec.onend = function () { recing = false; micEl.classList.remove('on'); if (hint.textContent === '正在听…') hint.textContent = '点下面投掷'; };
+        rec.start();
+      } catch (x) { hint.textContent = '语音启动失败'; }
+    });
+  }
+
+  roll.addEventListener('click', doRoll);
+  shutB.addEventListener('click', shut);
+  mask.addEventListener('click', function (e) { if (e.target === mask) shut(); });
+
+  /* 浮层打开时刷新记录 */
+  var _open = open;
+  open = function () { _open(); renderLog(); };
 })();
 </script>
 </body>
