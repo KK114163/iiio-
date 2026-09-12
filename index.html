@@ -668,7 +668,7 @@
 
   var STORE_KEY = 'xia-yu-zhou.pass';
   var COVER_KEY = 'xia-yu-zhou.cover';
-  var TTL       = 3 * 24 * 60 * 60 * 1000;   /* 3 天 */
+  var TTL       = 7 * 24 * 60 * 60 * 1000;   /* 免密 7 天（改这里可调：3 天就写 3） */
   var AUTO_WAIT = 1200;                      /* 免密时的跳转延迟，留时间点「重设」 */
   var BG_MAX    = 1600;                      /* 背景图最长边，超出则等比压缩 */
 
@@ -1151,6 +1151,8 @@
   }
 
   function go () {
+    /* 给 app.html 的入场守门留个通行标记（同标签页有效） */
+    try { sessionStorage.setItem('xy-entered', '1'); } catch (e) {}
     window.location.href = TARGET;
   }
 
