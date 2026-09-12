@@ -42248,7 +42248,7 @@ const DEFAULTS = {
 'fd-min-interval': 30, 'fd-max-interval': 1440,
 'fd-min-cards-post': 2, 'fd-max-cards-post': 15,
 'fd-post-kaomoji': 5, 'fd-post-emoji': 5, 'fd-post-sticker': 10, 'fd-post-image': 10,
-'call-incoming': 15, 'call-pickup': 70, 'call-busy': 15, 'call-reject': 15, 'call-hangup': 2,
+'call-incoming': 2, 'call-pickup': 10, 'call-busy': 20, 'call-reject': 20, 'call-hangup': 2,
 'call-resume': 1,
 'call-no-hangup': 0,
 'cs-normal': 0, 'cs-trigger-name': 0, 'cs-trigger-bar': 0,
@@ -43312,7 +43312,7 @@ const s = String(txt == null ? '' : txt);
 toast((off ? '已关闭：' : '已开启：') + (s.length > 18 ? s.slice(0, 18) + '…' : s));
 }
 function apiFor(st) {
-const gE = function () { const v = st.get('dc-enabled'); return v === null ? true : v === '1'; };
+const gE = function () { const v = st.get('dc-enabled'); return v === null ? false : v === '1'; };
 const gO = function () { const v = st.get('dc-overall'); return v === null ? 30 : Number(v); };
 const gOS = function (k) { const v = st.get('dc-overall-' + k); return v === null ? gO() : Number(v); };
 const gP = function (k) { const v = st.get('dc-prob-' + k); return v === null ? 25 : Number(v); };
@@ -57025,7 +57025,7 @@ try { if (!document.getElementById('page-home').hidden && htab === 'call') rende
 (function () {
 const uid = window.activePrefix();
 const store = window.activeStore();
-const CALL = { incoming: 15, pickup: 70, busy: 15, reject: 15, hangup: 2 };
+const CALL = { incoming: 2, pickup: 10, busy: 20, reject: 20, hangup: 2 };
 function callCfg() {
 const c = (window.replyCfg && window.replyCfg()) || {};
 return {
@@ -88734,6 +88734,31 @@ lastHeal: his
   /* 浮层打开时刷新记录 */
   var _open = open;
   open = function () { _open(); renderLog(); };
+})();
+</script>
+<script>
+(function () {
+  // [精简字卡库] 按标题文字隐藏整行，代码逻辑保留、只是不出现在列表里
+  var HIDE = [
+    '其他互动功能字卡', '其他互动功能字卡·公用', '其他互动功能字卡·专属',
+    'TA的小问题', 'TA的小问题·我的添加',
+    'TA的吐槽', 'TA的吐槽·我的添加',
+    'TA的邀请', 'TA的邀请·我的添加'
+  ];
+  function apply () {
+    var ns = document.querySelectorAll('.chat-item .ci .n');
+    for (var i = 0; i < ns.length; i++) {
+      var t = (ns[i].textContent || '').trim();
+      if (HIDE.indexOf(t) > -1) {
+        var row = ns[i].closest ? ns[i].closest('.chat-item') : null;
+        if (row) row.style.display = 'none';
+      }
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  setTimeout(apply, 800);
+  setTimeout(apply, 2000);
 })();
 </script>
 </body>
