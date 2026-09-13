@@ -14139,7 +14139,7 @@ html.tablet.ios-pwa-standalone .statusbar {
         <!-- v3.10.x：允许删除联系人消息（默认关闭，每联系人独立）。开启后点击 TA 消息弹出的操作菜单里多出「删除」按钮，可永久移除该条 TA 消息 -->
         <div class="set-row" id="cs-del-ta-msg-row">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M6 6l1 14a2 2 0 002 2h6a2 2 0 002-2l1-14"/></svg></div>
-          <div class="txt">允许删除联系人消息<span class="sub">点击消息气泡可弹出删除按钮，消息是真的会删除无法回复</span></div>
+          <div class="txt">允许删除联系人消息<span class="sub">点击消息气泡可弹出删除按钮，消息是真的会删除无法回复；自己发的消息不受此开关限制，随时可删</span></div>
           <label class="toggle"><input type="checkbox" id="cs-del-ta-msg"><span class="tk"></span></label>
         </div>
       </div>
@@ -32685,7 +32685,8 @@ const delBtn = msgActions.querySelector('.ma-del-ta');
 if (delBtn) {
 let delEn = false;
 try { delEn = store.get('cs-del-ta-msg') === '1'; } catch (e) {}
-delBtn.hidden = !(delEn && activeSide === 'in');
+/* [我的消息可删] 自己发的消息不依赖开关、随时可删；TA 的消息仍按 cs-del-ta-msg 开关显隐 */
+delBtn.hidden = !(activeSide === 'out' || (delEn && activeSide === 'in'));
 }
 msgActions.hidden = false;
 const bRect = b.getBoundingClientRect();
@@ -32816,12 +32817,15 @@ if (b) b.innerHTML = '<span style="opacity:.85">' + escTxt(val) + '</span>';
 }
 closeMsgActions();
 } else if (act === 'del') {
-if (activeMsgEl && idx >= 0 && msgs[idx] && msgs[idx].side === 'in') {
+/* [我的消息可删] 原逻辑只放行 side==='in'，导致自己发的消息删不掉；现两条边都走同一删除路径 */
+if (activeMsgEl && idx >= 0 && msgs[idx] && (msgs[idx].side === 'in' || msgs[idx].side === 'out')) {
+const delOut = msgs[idx].side === 'out';
 chatTailDrop(msgs[idx]); // FIX 2026-09-05 #185 删除消息同步从尾巴日志摘除，防刷新后 chatTailMerge 回放复活（与撤回同口径）
 msgs.splice(idx, 1);
 sessionChangedIdx.clear();
 saveMsgs();
 renderWindow(true);
+if (delOut) syncLastMineText(); // [我的消息可删] 与撤回同口径：删掉自己最后一条后，TA 引用/收藏不留旧文本
 toast('已删除该消息');
 }
 closeMsgActions();
