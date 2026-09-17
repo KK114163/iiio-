@@ -43303,6 +43303,17 @@ const enabledEl = document.getElementById('dc-enabled');
 if (!list || !tabsWrap || !enabledEl) return;
 const uid = window.activePrefix();
 const ls = window.activeStore();
+/* [预设字卡默认开] 一次性迁移：旧版把「使用默认字卡」的默认值写成了关闭，凡是被存过 '0' 的桌面
+   会永远拿不到系统预设字卡（装了自建字卡后就只剩自建卡在回）。这里只在首次运行时把已存的 '0' 补成
+   '1'，并打上永久标记——之后完全交给「聊天默认字卡」页面里的开关，不再干预用户的选择。 */
+try {
+if (!localStorage.getItem('xia-yu-zhou.dc-restore-done')) {
+['dc-enabled', 'dc-use-chat', 'dc-cat-main'].forEach(function (k) {
+try { if (ls.get(k) === '0') ls.set(k, '1'); } catch (e) {}
+});
+localStorage.setItem('xia-yu-zhou.dc-restore-done', '1');
+}
+} catch (e) {}
 function toast(msg) {
 let t = document.getElementById('cc-toast');
 if (!t) { t = document.createElement('div'); t.id = 'cc-toast'; document.body.appendChild(t); }
@@ -43316,7 +43327,7 @@ const s = String(txt == null ? '' : txt);
 toast((off ? '已关闭：' : '已开启：') + (s.length > 18 ? s.slice(0, 18) + '…' : s));
 }
 function apiFor(st) {
-const gE = function () { const v = st.get('dc-enabled'); return v === null ? false : v === '1'; };
+const gE = function () { const v = st.get('dc-enabled'); return v === null ? true : v === '1'; }; /* [预设字卡默认开] 改回 true：原版即 true，中途被误改成 false 导致装了自建字卡后系统预设字卡永不出现 */
 const gO = function () { const v = st.get('dc-overall'); return v === null ? 30 : Number(v); };
 const gOS = function (k) { const v = st.get('dc-overall-' + k); return v === null ? gO() : Number(v); };
 const gP = function (k) { const v = st.get('dc-prob-' + k); return v === null ? 25 : Number(v); };
