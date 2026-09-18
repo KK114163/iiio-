@@ -27514,6 +27514,16 @@ return [
 '分类开关=' + ['main', 'kaomoji', 'emoji', 'touch', 'dict'].map(function (k) { try { return k + ':' + (window.defaultCardCat ? window.defaultCardCat(k) : '?'); } catch (e) { return k + ':?'; } }).join(','),
 /* [预设字卡排查] 实抽 20 次：直接跑完整条 drawCards 链路，一把区分「链路被挡住(0/20)」还是「链路正常只是没轮到」。
    纯随机抽样、无副作用；括号里是抽到的第一张卡的开头几个字，方便肉眼确认内容对不对。 */
+'主字卡可用=' + (function () {
+try {
+if (!window.getDefaultCardGroups) return '无接口';
+const grps = window.getDefaultCardGroups('main') || [];
+let all = 0, live = 0;
+grps.forEach(function (g) { (g[1] || []).forEach(function (c) { all++; if (!(window.isDefaultCardOff && window.isDefaultCardOff('main', c))) live++; }); });
+/* 0/0＝getDefaultCardGroups 被 LOCKED() 拦下（字卡锁）；0/5276＝卡在、但被逐张关光了；5276/5276＝这一层是好的 */
+return live + '/' + all + (all === 0 ? ' ← 字卡锁拦住了整库' : (live === 0 ? ' ← 被逐张关光了' : ''));
+} catch (e) { return '读取失败：' + (e && e.message || e); }
+})(),
 '实抽20次=' + (function () {
 try {
 if (!window.getDefaultCards) return '无接口';
