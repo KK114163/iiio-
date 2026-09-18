@@ -18723,6 +18723,16 @@ try { localStorage.setItem(LS_KEY, 'locked'); } catch (e) {}
 document.dispatchEvent(new Event('mochi-cardlock-locked'));
 };
 })();
+/* [封面移除补丁·字卡锁] 字卡锁的解锁/上锁 UI 只存在于开屏封面上，而封面已被移除 ——
+   锁一旦被置成 locked，就变成「只能锁、不能开」的死锁，用户找不到任何地方解锁。
+   后果比想象中大：drawCards() 和 getDefaultCardGroups() 都会直接 return []，
+   于是【系统预设字卡】一张都抽不到、【词典拼字】永远拿不到词池，
+   表现为「聊天使用概率调到 50 也没用，TA 只用自建字卡」（2026/9/18 诊断实测：字卡锁=锁住、实抽20次=0/20）。
+   这里把读取口固定为「已解锁」：锁状态不再参与任何判断，同时把遗留的 locked 存档改回 open。 */
+try {
+window.cardLockOpen = function () { return true; };
+try { localStorage.setItem('xy-home-v2:cardlock-state', 'open'); } catch (e) {}
+} catch (e) {}
 } catch (__e) { try { console.error("[JS] card-lock.js", __e && __e.message || __e); } catch (x) {} if (window.__jsErrors) window.__jsErrors.push(String(__e && __e.message || __e)); } })();
 (function () { try {
 (function () {
