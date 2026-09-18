@@ -27505,7 +27505,26 @@ return [
 '聊天使用=' + (window.defaultCardUse ? window.defaultCardUse('chat') : '?'),
 '主字卡=' + (window.defaultCardCat ? window.defaultCardCat('main') : '?'),
 '默认概率chat=' + (cfg.overallFor ? cfg.overallFor('chat') : cfg.overall),
-'主卡占比=' + (cfg.probs ? cfg.probs.main : '?')
+'主卡占比=' + (cfg.probs ? cfg.probs.main : '?'),
+/* [预设字卡排查] 补三项能一眼定位「预设字卡 / 词典永不出现」的闸门：
+   字卡锁=true 时 drawCards 与 getDefaultCardGroups 双双直接 return，概率调多少都没用；
+   预设数据=未加载 时 DATA 是空壳，同样一张都抽不到；分类开关=全 false 时权重合计为 0。 */
+'字卡锁=' + (function () { try { return window.cardLockOpen ? (window.cardLockOpen() ? '开(可抽)' : '锁住(全不抽)') : '无接口'; } catch (e) { return '读取失败'; } })(),
+'预设数据=' + (function () { try { const d = window.DEFAULT_CARD_DATA; if (!d) return '未加载'; const n = function (k) { return Array.isArray(d[k]) ? d[k].length : 0; }; return 'main组' + n('main') + '·dict组' + n('dict') + '·kaomoji组' + n('kaomoji'); } catch (e) { return '读取失败'; } })(),
+'分类开关=' + ['main', 'kaomoji', 'emoji', 'touch', 'dict'].map(function (k) { try { return k + ':' + (window.defaultCardCat ? window.defaultCardCat(k) : '?'); } catch (e) { return k + ':?'; } }).join(','),
+/* [预设字卡排查] 实抽 20 次：直接跑完整条 drawCards 链路，一把区分「链路被挡住(0/20)」还是「链路正常只是没轮到」。
+   纯随机抽样、无副作用；括号里是抽到的第一张卡的开头几个字，方便肉眼确认内容对不对。 */
+'实抽20次=' + (function () {
+try {
+if (!window.getDefaultCards) return '无接口';
+let hit = 0, sample = '';
+for (let i = 0; i < 20; i++) {
+const d = window.getDefaultCards('chat');
+if (d && d.text) { hit++; if (!sample) sample = String(d.text).slice(0, 8); }
+}
+return hit + '/20' + (sample ? '（例：' + sample + '…）' : '') + (hit ? '' : ' ← 链路被挡住，概率调多少都没用');
+} catch (e) { return '抽取出错：' + (e && e.message || e); }
+})()
 ].join(' / ');
 } catch (e) { return '诊断出错:' + e.message; }
 };
