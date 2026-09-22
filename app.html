@@ -15,8 +15,65 @@
     var until = parseInt(localStorage.getItem('xia-yu-zhou.pass'), 10);
     if (until && Date.now() < until) return;
     if (sessionStorage.getItem('xy-entered') === '1') return;
+    /* [防重定向死循环·2026/9/18] 安卓上 Service Worker 会把 index.html 的请求也回成 app.html，
+       于是两个页面互相弹：app.html 没通行证→跳 index.html→SW 又回 app.html→再跳……整页无限闪烁打不开。
+       这里弹回过一次就不再弹，改为打标记、留在本页显示就地密码门（见紧随其后的第二段脚本）。
+       安全性不变：放行的唯一途径仍然是在密码框里输对密码。 */
+    if (sessionStorage.getItem('xy-guard-bounced') === '1') { window.__xyNeedGate = true; return; }
+    sessionStorage.setItem('xy-guard-bounced', '1');
   } catch (e) { return; }
   try { location.replace('./index.html'); } catch (e2) {}
+})();
+</script>
+<script>
+/* [就地密码门·2026/9/18] 只有上一步打了 __xyNeedGate 才启用（即「弹回过一次又被弹回来」）。
+   平时完全不存在，不影响正常进场。 */
+(function () {
+  if (!window.__xyNeedGate) return;
+  function build () {
+    if (document.getElementById('xy-gate')) return;
+    /* 走到这里说明 SW 正在把 index.html 也回成 app.html（死循环的元凶）。
+       顺手注销它，让后续导航重新走网络；这一步只在检测到死循环时执行，
+       正常设备（如 iOS）永远不会触发，行为完全不变。 */
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+        navigator.serviceWorker.getRegistrations().then(function (rs) {
+          for (var i = 0; i < rs.length; i++) { try { rs[i].unregister(); } catch (e) {} }
+        })['catch'](function () {});
+      }
+    } catch (e) {}
+    var PW = '114613';
+    var TTL = 7 * 24 * 60 * 60 * 1000;
+    var mask = document.createElement('div');
+    mask.id = 'xy-gate';
+    mask.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#292929;display:flex;'
+      + 'flex-direction:column;align-items:center;justify-content:center;gap:14px;'
+      + 'font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;';
+    mask.innerHTML = '<div style="color:#fff;font-size:15px;letter-spacing:.35em;margin-bottom:6px">霞 与 昼</div>'
+      + '<input id="xy-gate-pw" type="password" inputmode="numeric" maxlength="6" placeholder="请输入密码" '
+      + 'style="width:196px;box-sizing:border-box;padding:13px 14px;border:none;border-radius:999px;'
+      + 'background:#000;color:#fff;font-size:16px;text-align:center;outline:none;letter-spacing:.3em">'
+      + '<button id="xy-gate-ok" type="button" '
+      + 'style="width:196px;padding:13px;border:none;border-radius:999px;background:#fff;color:#111;'
+      + 'font-size:15px;font-weight:700;cursor:pointer">确 认</button>'
+      + '<div id="xy-gate-tip" style="color:#8a8a8a;font-size:12px;min-height:1em"></div>';
+    document.body.appendChild(mask);
+    var inp = document.getElementById('xy-gate-pw');
+    var tip = document.getElementById('xy-gate-tip');
+    function submit () {
+      if (inp.value !== PW) { tip.textContent = '密码不对'; inp.value = ''; return; }
+      try { localStorage.setItem('xia-yu-zhou.pass', String(Date.now() + TTL)); } catch (e) {}
+      try { sessionStorage.setItem('xy-entered', '1'); } catch (e) {}
+      try { sessionStorage.removeItem('xy-guard-bounced'); } catch (e) {}
+      location.reload();
+    }
+    document.getElementById('xy-gate-ok').addEventListener('click', submit);
+    inp.addEventListener('input', function () { inp.value = inp.value.replace(/\D/g, ''); });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+    setTimeout(function () { try { inp.focus(); } catch (e) {} }, 120);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual">
